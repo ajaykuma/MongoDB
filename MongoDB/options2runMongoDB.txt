@@ -1,0 +1,11 @@
+#Running MongoDB as standalone instance(bound to Ip Address of machine)
+mongod -f /etc/mongod.conf
+#data path = /var/lib/mongodb/
+#log path = /var/log/mongodb/mongod.log
+mongo --host hostname
+
+
+
+#Running MongoDB as a member of replicaset
+mongod --dbpath /srv/mongodb/db2 --replSet ds0 --bind_ip 10.0.3.1xx
+

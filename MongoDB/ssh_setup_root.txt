@@ -1,0 +1,17 @@
+setup ssh for root
+on t1
+login as root
+--set pswd for root user
+$passwd
+--edit /etc/ssh/sshd_config
+--set PermitRootLogin to yes
+$service ssh restart
+--generate ssh keys for root
+
+$ssh-keygen -t rsa -P ""
+--copy ssh keys
+t1$ssh-copy-id -i $HOME/.ssh/id_rsa.pub root@t2
+t1$cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
+
+--do the same on t2 
+--test ssh to each machine and to itself

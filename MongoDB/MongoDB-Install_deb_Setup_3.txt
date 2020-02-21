@@ -1,0 +1,106 @@
+#Install MongoDB 3.2
+#sudo rm /etc/apt/sources.list.d/mongodb*.list
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+sudo apt-get update
+sudo apt install mongodb-org
+
+
+#fixing issues
+--Removing expired keys
+apt-key list | grep "expired:"
+
+--replace the key(if the key expires)
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xd68fa50fea312927
+The number 0xd68fa50fea312927 is the current valid key id (expires at 2019-10-09), as you can check 
+here : https://jira.mongodb.org/browse/SERVER-31459
+Note** this is the same key you get when you receive EA312927
+
+#Install MongoDB 3.4
+#removing older release and adding new one
+The MongoDB Current Stable Release is now (3.4.9).
+
+To fix the issue first we make a small cleanup (optional)
+
+    we remove the old key added
+
+    sudo apt-key list // List all keys
+
+    sudo apt-key del EA312927 // Find the uid of the key to be deleted
+
+    apt-key list | grep Mongodb // Verify if its deleted
+
+    Now we remove the MongoDB repo added in /etc/apt/sources.list.d
+
+    sudo rm /etc/apt/sources.list.d/mongodb*.list
+
+    check if list is removed
+
+    check if any process (mongo*) or (mongod) as service is running,if so stop it.
+
+    For a getting a cleaner install of newer version you can remove the packages of mongodb,apt-get autoremove mongo*
+
+    check if /usr/bin/mongo* has anything for mongodb listed
+
+    Now we install the latest stable version of MongoDB(3.4.9) using below commands
+
+Import the Public Key used by the Ubuntu Package Manager
+
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+
+Create a file list for mongoDB to fetch the current repository
+
+echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-3.4.list
+
+Install MongoDB
+sudo apt-get update
+sudo apt-get install mongodb-org
+
+create a directory as /data/db
+
+start mongod process, by typing $mongod
+
+open another terminal and bring up mongo client, $mongo
+
+check and confirm if it shows mongodb version 3.4
+
+#checking new list of keys
+sudo apt-key list 
+/etc/apt/trusted.gpg
+--------------------
+pub   1024D/437D05B5 2004-09-12
+uid                  Ubuntu Archive Automatic Signing Key <ftpmaster@ubuntu.com>
+sub   2048g/79164387 2004-09-12
+
+pub   4096R/C0B21F32 2012-05-11
+uid                  Ubuntu Archive Automatic Signing Key (2012) <ftpmaster@ubuntu.com>
+
+pub   4096R/EFE21092 2012-05-11
+uid                  Ubuntu CD Image Automatic Signing Key (2012) <cdimage@ubuntu.com>
+
+pub   1024D/FBB75451 2004-12-30
+uid                  Ubuntu CD Image Automatic Signing Key <cdimage@ubuntu.com>
+
+pub   2048R/7F0CEB10 2010-02-05
+uid                  Richard Kreuter <richard@10gen.com>
+sub   2048R/A89B0149 2010-02-05
+
+pub   1024R/7F0CEB10 2014-08-13
+uid                  Totally Legit Signing Key <mallory@example.org>
+
+pub   4096R/EA312927 2015-10-09 [expires: 2019-10-09]
+uid                  MongoDB 3.2 Release Signing Key <packaging@mongodb.com>
+
+pub   4096R/A15703C6 2016-01-11 [expires: 2020-01-05]
+uid                  MongoDB 3.4 Release Signing Key <packaging@mongodb.com>
+
+#Installing MongoDB 3.6
+--If older version installed repeat the cleanup steps above
+wget -qO - https://www.mongodb.org/static/pgp/server-3.6.asc | sudo apt-key add -
+echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list
+apt-get update
+sudo apt-get install -y mongodb-org
+
+--repeat steps to start mongod and connect using client 'mongo' as mentioned above in section 3.4
+
+#For setting up MongoDB 4.x refer MongoDB-Install_deb_Setup_4.txt

@@ -1,0 +1,26 @@
+#update packages
+apt-get update
+#Download tar from https://www.mongodb.com/download-center
+--downloaded 3.4.20
+--downloaded 4.0.9
+#untar them in a location
+--did in /usr/local
+cd /usr/local
+--create a symlink pointing to a version of mongodb
+--while being logged in as root
+ln -s mongodb-linux-x86_64-ubuntu1604-3.4.20 mongodb
+--change ownership
+chown -R hdc1:hdc1 mongo*
+cd 
+--switch to your user
+--update path in .bashrc for your user
+export MONGODB_HOME=/usr/local/mongodb/
+export PATH=$PATH:$MONGODB_HOME/bin
+--refresh .bashrc
+source .bashrc
+--create directory using sudo privileges --> /data/db and change ownership to your user
+--being logged in as your user,run mongod from terminal
+$mongod
+--start another terminal
+$mongo
+Note** you can anytime unlink and create new link pointing to newer version

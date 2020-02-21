@@ -1,0 +1,85 @@
+
+This is the process of converting a standalone mongod instance into a replica set.
+Setup mongodb on instance 1 (in My case C2)
+Change ip in /etc/mongod.conf
+bindIp: 10.0.2.15
+
+service mongod start
+
+to check if it binds to ipaddress provided.
+
+service mongod start
+
+Now Start the instance. Use the --replSet option to specify the name of the new replica set.
+
+Create directory path ie /srv/mongodb/db0
+
+The following command starts a standalone instance as a member of a new replica set named rs0.
+
+mongod --port 27017 --dbpath /srv/mongodb/db0 --replSet rs0 --bind_ip localhost,<hostname(s)|ip address(es)>
+
+We need not mention --bind_ip as that is already in config file 
+
+mongod --port 27017 --dbpath /srv/mongodb/db0 --replSet rs0
+
+Connect a mongo shell to the mongod instance.
+
+Use rs.initiate() to initiate the new replica set
+
+To view the replica set configuration, use rs.conf(). 
+To check the status of the replica set, use rs.status().
+
+Now adding members to replica set
+A replica set can have a maximum of seven voting members. To add a member to a replica set that already has seven voting members, you must either add the member as a non-voting member or remove a vote from an existing member.
+
+Start the new mongod instance. Specify the data directory and the replica set name. 
+
+mongod --port 28017 --dbpath /srv/mongodb/db1 --replSet rs0  
+
+Connect to the replica set’s primary.
+
+You can only add members while connected to the primary. If you do not know which member is the primary, log into any member of the replica set and issue the db.isMaster() command.
+
+Use rs.add() to add the new member to the replica set.
+
+rs.add( { host: "c2:28017", priority: 0, votes: 0 } )
+
+Ensure that the new member has reached SECONDARY state. To check the state of the replica set members, run rs.status()
+
+Once the newly added member has transitioned into SECONDARY state, use rs.reconfig() to update the newly added member’s priority and votes if needed.
+
+example:
+var cfg = rs.conf();
+cfg.members[4].priority = 1
+cfg.members[4].votes = 1
+rs.reconfig(cfg)
+
+Remove a Member Using rs.remove()
+Shut down the mongod instance for the member you wish to remove. To shut down the instance, connect using the mongo shell and the db.shutdownServer() method.
+
+Connect to the replica set’s current primary. To determine the current primary, use db.isMaster() while connected to any member of the replica set.
+
+Use rs.remove() in either of the following forms to remove the member:
+
+rs.remove("c2:28017")
+rs.remove("c2")
+
+=========================================
+Testing your replica set
+1. use mongo shell to connect to primary/secondary
+   try reading (for example : show dbs)
+2. close the terminal used to start primary and secondarys and then check if process still running using
+   "netstat -plten | grep mongo"
+3. Try killing primary and check if one of secondary becomes primary ( either through mongo shell or rs.status)
+4. kill all the instances
+5. Try starting your instance without replication being enabled
+6. rs.status()
+
+Also check your data directories
+/srv/mongodb/db0
+/srv/mongodb/db1
+/srv/mongodb/db2
+
+
+
+
