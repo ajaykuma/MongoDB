@@ -1,2 +1,0 @@
-# MongoDB
-Administration and Development
