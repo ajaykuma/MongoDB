@@ -92,7 +92,7 @@ cd
 --switch to your user(say:mng)
 
 --update path in .bashrc for your user
-export MONGODB_HOME=/usr/local/mongodb/
+export MONGODB_HOME=/usr/local/mongo/
 export PATH=$PATH:$MONGODB_HOME/bin
 
 --refresh .bashrc
