@@ -1,3 +1,4 @@
+when using deb package
 Delete old IDs as described in Mongo-Install_deb.txt
 
 Import the Public Key used by the Ubuntu Package Manager

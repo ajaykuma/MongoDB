@@ -1,4 +1,5 @@
 #Install MongoDB 3.2
+when using deb package
 #sudo rm /etc/apt/sources.list.d/mongodb*.list
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
 echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
@@ -17,6 +18,7 @@ here : https://jira.mongodb.org/browse/SERVER-31459
 Note** this is the same key you get when you receive EA312927
 
 #Install MongoDB 3.4
+when using deb package
 #removing older release and adding new one
 The MongoDB Current Stable Release is now (3.4.9).
 
@@ -95,6 +97,7 @@ pub   4096R/A15703C6 2016-01-11 [expires: 2020-01-05]
 uid                  MongoDB 3.4 Release Signing Key <packaging@mongodb.com>
 
 #Installing MongoDB 3.6
+when using deb package
 --If older version installed repeat the cleanup steps above
 wget -qO - https://www.mongodb.org/static/pgp/server-3.6.asc | sudo apt-key add -
 echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list
