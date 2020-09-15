@@ -1,0 +1,564 @@
+#Shows processes running and time consumed
+#Any process running for more than 100 ms would be considered as a slow process
+
+rs0:PRIMARY> db.currentOp()
+{
+	"inprog" : [
+		{
+			"desc" : "conn25",
+			"threadId" : "140715027502848",
+			"connectionId" : 25,
+			"client" : "192.168.182.13:40080",
+			"clientMetadata" : {
+				"driver" : {
+					"name" : "NetworkInterfaceASIO-RS",
+					"version" : "3.4.23"
+				},
+				"os" : {
+					"type" : "Linux",
+					"name" : "Ubuntu",
+					"architecture" : "x86_64",
+					"version" : "16.04"
+				}
+			},
+			"active" : true,
+			"opid" : 16993,
+			"secs_running" : 0,
+			"microsecs_running" : NumberLong(465535),
+			"op" : "getmore",
+			"ns" : "local.oplog.rs",
+			"query" : {
+				"getMore" : NumberLong("25350395787"),
+				"collection" : "oplog.rs",
+				"maxTimeMS" : NumberLong(5000),
+				"term" : NumberLong(1),
+				"lastKnownCommittedOpTime" : {
+					"ts" : Timestamp(1569950772, 1),
+					"t" : NumberLong(1)
+				}
+			},
+			"originatingCommand" : {
+				"find" : "oplog.rs",
+				"filter" : {
+					"ts" : {
+						"$gte" : Timestamp(1569948411, 1)
+					}
+				},
+				"tailable" : true,
+				"oplogReplay" : true,
+				"awaitData" : true,
+				"maxTimeMS" : NumberLong(60000),
+				"term" : NumberLong(1),
+				"readConcern" : {
+					"afterOpTime" : {
+						"ts" : Timestamp(1569948411, 1),
+						"t" : NumberLong(1)
+					}
+				}
+			},
+			"planSummary" : "COLLSCAN",
+			"numYields" : 0,
+			"locks" : {
+				
+			},
+			"waitingForLock" : false,
+			"lockStats" : {
+				"Global" : {
+					"acquireCount" : {
+						"r" : NumberLong(2)
+					}
+				},
+				"Database" : {
+					"acquireCount" : {
+						"r" : NumberLong(1)
+					}
+				},
+				"oplog" : {
+					"acquireCount" : {
+						"r" : NumberLong(1)
+					}
+				}
+			}
+		},
+		{
+			"desc" : "conn15",
+			"threadId" : "140715028555520",
+			"connectionId" : 15,
+			"client" : "192.168.182.14:39866",
+			"clientMetadata" : {
+				"driver" : {
+					"name" : "NetworkInterfaceASIO-RS",
+					"version" : "3.4.23"
+				},
+				"os" : {
+					"type" : "Linux",
+					"name" : "Ubuntu",
+					"architecture" : "x86_64",
+					"version" : "16.04"
+				}
+			},
+			"active" : true,
+			"opid" : 16992,
+			"secs_running" : 0,
+			"microsecs_running" : NumberLong(465664),
+			"op" : "getmore",
+			"ns" : "local.oplog.rs",
+			"query" : {
+				"getMore" : NumberLong("22751094655"),
+				"collection" : "oplog.rs",
+				"maxTimeMS" : NumberLong(5000),
+				"term" : NumberLong(1),
+				"lastKnownCommittedOpTime" : {
+					"ts" : Timestamp(1569950772, 1),
+					"t" : NumberLong(1)
+				}
+			},
+			"originatingCommand" : {
+				"find" : "oplog.rs",
+				"filter" : {
+					"ts" : {
+						"$gte" : Timestamp(1569948411, 1)
+					}
+				},
+				"tailable" : true,
+				"oplogReplay" : true,
+				"awaitData" : true,
+				"maxTimeMS" : NumberLong(60000),
+				"term" : NumberLong(1),
+				"readConcern" : {
+					"afterOpTime" : {
+						"ts" : Timestamp(1569948411, 1),
+						"t" : NumberLong(1)
+					}
+				}
+			},
+			"planSummary" : "COLLSCAN",
+			"numYields" : 0,
+			"locks" : {
+				
+			},
+			"waitingForLock" : false,
+			"lockStats" : {
+				"Global" : {
+					"acquireCount" : {
+						"r" : NumberLong(2)
+					}
+				},
+				"Database" : {
+					"acquireCount" : {
+						"r" : NumberLong(1)
+					}
+				},
+				"oplog" : {
+					"acquireCount" : {
+						"r" : NumberLong(1)
+					}
+				}
+			}
+		},
+		{
+			"desc" : "conn28",
+			"threadId" : "140715627419392",
+			"connectionId" : 28,
+			"client" : "192.168.182.12:33698",
+			"appName" : "MongoDB Shell",
+			"clientMetadata" : {
+				"application" : {
+					"name" : "MongoDB Shell"
+				},
+				"driver" : {
+					"name" : "MongoDB Internal Client",
+					"version" : "3.4.23"
+				},
+				"os" : {
+					"type" : "Linux",
+					"name" : "Ubuntu",
+					"architecture" : "x86_64",
+					"version" : "16.04"
+				}
+			},
+			"active" : true,
+			"opid" : 16995,
+			"secs_running" : 0,
+			"microsecs_running" : NumberLong(51),
+			"op" : "command",
+			"ns" : "admin.$cmd",
+			"query" : {
+				"currentOp" : 1
+			},
+			"numYields" : 0,
+			"locks" : {
+				
+			},
+			"waitingForLock" : false,
+			"lockStats" : {
+				
+			}
+		},
+		{
+			"desc" : "WT RecordStoreThread: local.oplog.rs",
+			"threadId" : "140715401058048",
+			"active" : true,
+			"opid" : 1051,
+			"secs_running" : 2997,
+			"microsecs_running" : NumberLong("2997102487"),
+			"op" : "none",
+			"ns" : "local.oplog.rs",
+			"query" : {
+				
+			},
+			"numYields" : 0,
+			"locks" : {
+				
+			},
+			"waitingForLock" : false,
+			"lockStats" : {
+				"Global" : {
+					"acquireCount" : {
+						"r" : NumberLong(1),
+						"w" : NumberLong(1)
+					},
+					"acquireWaitCount" : {
+						"w" : NumberLong(1)
+					},
+					"timeAcquiringMicros" : {
+						"w" : NumberLong(14870)
+					}
+				},
+				"Database" : {
+					"acquireCount" : {
+						"w" : NumberLong(1)
+					}
+				},
+				"oplog" : {
+					"acquireCount" : {
+						"w" : NumberLong(1)
+					}
+				}
+			}
+		},
+		{
+			"desc" : "ReplBatcher",
+			"threadId" : "140715065349888",
+			"active" : true,
+			"opid" : 16986,
+			"op" : "none",
+			"ns" : "",
+			"query" : {
+				
+			},
+			"numYields" : 0,
+			"locks" : {
+				
+			},
+			"waitingForLock" : false,
+			"lockStats" : {
+				
+			}
+		},
+		{
+			"desc" : "NoopWriter",
+			"threadId" : "140715048564480",
+			"active" : true,
+			"opid" : 16958,
+			"op" : "none",
+			"ns" : "",
+			"query" : {
+				
+			},
+			"numYields" : 0,
+			"locks" : {
+				
+			},
+			"waitingForLock" : false,
+			"lockStats" : {
+				
+			}
+		},
+		{
+			"desc" : "rsSync",
+			"threadId" : "140715216418560",
+			"active" : true,
+			"opid" : 16987,
+			"op" : "none",
+			"ns" : "",
+			"query" : {
+				
+			},
+			"numYields" : 0,
+			"locks" : {
+				
+			},
+			"waitingForLock" : false,
+			"lockStats" : {
+				
+			}
+		}
+	],
+	"ok" : 1
+}
+
+rs0:PRIMARY> db.killOp(16995)
+{ "info" : "attempting to kill op", "ok" : 1 }
+======================================================================
+#using mongotop
+root@m1:~# mongotop --host m1
+2019-10-01T19:36:59.324+0200	connected to: m1
+
+                    ns    total    read    write    2019-10-01T19:37:00+02:00
+        local.oplog.rs      1ms     1ms      0ms                             
+    admin.system.roles      0ms     0ms      0ms                             
+  admin.system.version      0ms     0ms      0ms                             
+              local.me      0ms     0ms      0ms                             
+local.replset.election      0ms     0ms      0ms                             
+local.replset.minvalid      0ms     0ms      0ms                             
+     local.startup_log      0ms     0ms      0ms                             
+  local.system.replset      0ms     0ms      0ms                             
+
+                    ns    total    read    write    2019-10-01T19:37:01+02:00
+        local.oplog.rs      9ms     9ms      0ms                             
+    admin.system.roles      0ms     0ms      0ms                             
+  admin.system.version      0ms     0ms      0ms                             
+              local.me      0ms     0ms      0ms                             
+local.replset.election      0ms     0ms      0ms                             
+local.replset.minvalid      0ms     0ms      0ms                             
+     local.startup_log      0ms     0ms      0ms                             
+  local.system.replset      0ms     0ms      0ms                             
+
+
+^C2019-10-01T19:37:04.061+0200	signal 'interrupt' received; forcefully terminating
+=====================================================================
+#
+rs0:PRIMARY> db.getProfilingStatus()
+{ "was" : 0, "slowms" : 100 }
+rs0:PRIMARY> db.getProfilingLevel()
+0
+rs0:PRIMARY> 
+
+Profiling levels
+0--disabled
+1--enabled(100 ms)
+2--enabled for everything
+
+To check performance we can enable the 'PROFILER'
+rs0:PRIMARY> db.setProfilingLevel(1)
+{ "was" : 0, "slowms" : 100, "ok" : 1 }
+rs0:PRIMARY> db.getProfilingLevel()
+1
+
+#Testing profiler
+rs0:PRIMARY> for(i=1;i<=100000;i++)db.emp.insert({empid:i,name: "Xyuuuuuuuuvfhjihgsh uwec iwc ewue"})
+^C
+do you want to kill the current op(s) on the server? (y/n): y
+2019-10-01T19:54:26.432+0200 I CONTROL  [main] shutting down with code:0
+root@m1:~# mongo --host m1 --port 27017
+MongoDB shell version v3.4.23
+connecting to: mongodb://m1:27017/
+MongoDB server version: 3.4.23
+Server has startup warnings: 
+2019-10-01T18:22:43.427+0200 I STORAGE  [initandlisten] 
+2019-10-01T18:22:43.428+0200 I STORAGE  [initandlisten] ** WARNING: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine
+2019-10-01T18:22:43.428+0200 I STORAGE  [initandlisten] **          See http://dochub.mongodb.org/core/prodnotes-filesystem
+2019-10-01T18:22:43.503+0200 I CONTROL  [initandlisten] 
+2019-10-01T18:22:43.503+0200 I CONTROL  [initandlisten] ** WARNING: Access control is not enabled for the database.
+2019-10-01T18:22:43.503+0200 I CONTROL  [initandlisten] **          Read and write access to data and configuration is unrestricted.
+2019-10-01T18:22:43.503+0200 I CONTROL  [initandlisten] ** WARNING: You are running this process as the root user, which is not recommended.
+2019-10-01T18:22:43.503+0200 I CONTROL  [initandlisten] 
+rs0:PRIMARY> db.emp.count()
+17511
+
+#checking if entries were added by profile
+rs0:PRIMARY> db.system.profile.find()
+
+#no entries as we cancelled the query, lets change profiling capture for anything more than 5 ms
+
+rs0:PRIMARY> db.setProfilingLevel(1,5)
+{ "was" : 0, "slowms" : 100, "ok" : 1 }
+rs0:PRIMARY> db.getProfilingLevel()
+1
+
+#running the query
+rs0:PRIMARY> for(i=1;i<=100000;i++)db.emp.insert({empid:i,name: "Xyuuuuuuuuvfhjihgsh uwec iwc ewue"})
+^C2019-10-01T19:57:32.864+0200 I CONTROL  [main] shutting down with code:0
+
+#looking in profile collection, updated by profiler
+rs0:PRIMARY> db.system.profile.find()
+{ "op" : "insert", "ns" : "test.emp", "query" : { "insert" : "emp", "documents" : [ { "_id" : ObjectId("5d939377d6006a5e8d570f16"), "empid" : 11762, "name" : "Xyuuuuuuuuvfhjihgsh uwec iwc ewue" } ], "ordered" : true }, "ninserted" : 1, "keysInserted" : 1, "numYield" : 0, "locks" : { "Global" : { "acquireCount" : { "r" : NumberLong(2), "w" : NumberLong(2) } }, "Database" : { "acquireCount" : { "w" : NumberLong(2) } }, "Collection" : { "acquireCount" : { "w" : NumberLong(1) } }, "Metadata" : { "acquireCount" : { "w" : NumberLong(1) } }, "oplog" : { "acquireCount" : { "w" : NumberLong(1) } } }, "responseLength" : 89, "protocol" : "op_command", "millis" : 6, "ts" : ISODate("2019-10-01T17:57:11.299Z"), "client" : "192.168.182.12", "appName" : "MongoDB Shell", "allUsers" : [ ], "user" : "" }
+{ "op" : "insert", "ns" : "test.emp", "query" : { "insert" : "emp", "documents" : [ { "_id" : ObjectId("5d939378d6006a5e8d57193e"), "empid" : 14362, "name" : "Xyuuuuuuuuvfhjihgsh uwec iwc ewue" } ], "ordered" : true }, "ninserted" : 1, "keysInserted" : 1, "numYield" : 0, "locks" : { "Global" : { "acquireCount" : { "r" : NumberLong(2), "w" : NumberLong(2) } }, "Database" : { "acquireCount" : { "w" : NumberLong(2) } }, "Collection" : { "acquireCount" : { "w" : NumberLong(1) } }, "Metadata" : { "acquireCount" : { "w" : NumberLong(1) } }, "oplog" : { "acquireCount" : { "w" : NumberLong(1) } } }, "responseLength" : 89, "protocol" : "op_command", "millis" : 7, "ts" : ISODate("2019-10-01T17:57:12.277Z"), "client" : "192.168.182.12", "appName" : "MongoDB Shell", "allUsers" : [ ], "user" : "" }
+{ "op" : "insert", "ns" : "test.emp", "query" : { "insert" : "emp", "documents" : [ { "_id" : ObjectId("5d939379d6006a5e8d572371"), "empid" : 16973, "name" : "Xyuuuuuuuuvfhjihgsh uwec iwc ewue" } ], "ordered" : true }, "ninserted" : 1, "keysInserted" : 1, "numYield" : 0, "locks" : { "Global" : { "acquireCount" : { "r" : NumberLong(2), "w" : NumberLong(2) } }, "Database" : { "acquireCount" : { "w" : NumberLong(2) } }, "Collection" : { "acquireCount" : { "w" : NumberLong(1) } }, "Metadata" : { "acquireCount" : { "w" : NumberLong(1) } }, "oplog" : { "acquireCount" : { "w" : NumberLong(1) } } }, "responseLength" : 89, "protocol" : "op_command", "millis" : 5, "ts" : ISODate("2019-10-01T17:57:13.232Z"), "client" : "192.168.182.12", "appName" : "MongoDB Shell", "allUsers" : [ ], "user" : "" }
+
+rs0:PRIMARY> db.setProfilingLevel(0)
+{ "was" : 1, "slowms" : 5, "ok" : 1 }
+rs0:PRIMARY> db.getProfilingLevel()
+0
+
+=================================================================
+#kill all the mongod processes
+#Start again
+mongod --port 27017 --dbpath /srv/mongodb/db0 --replSet rs0 --bind_ip 192.168.182.12 --httpinterface --rest
+mongod --port 27017 --dbpath /srv/mongodb/db1 --replSet rs0 --bind_ip 192.168.182.13
+mongod --port 27017 --dbpath /srv/mongodb/db2 --replSet rs0 --bind_ip 192.168.182.14
+
+#now access http interface
+http://m1:28017/
+
+#we can look at serverstats here same as db.serverStats()
+#db.stats()
+#db.emp.stats()
+#db.printReplicationInfo()
+============================================================
+#rs0:PRIMARY> db.serverStatus().storageEngine
+{
+	"name" : "wiredTiger",
+	"supportsCommittedReads" : true,
+	"readOnly" : false,
+	"persistent" : true
+}
+
+#db.serverStatus().wiredTiger
+#to see all configuration details of wiredTiger
+==================================================================
+#rs0:PRIMARY> db.serverStatus().locks
+rs0:PRIMARY> db.serverStatus().globalLock
+
+    globalLock.currentQueue.total: This number can indicate a possible concurrency issue if it’s consistently high. This can happen if a lot of requests are waiting for a lock to be released.
+    globalLock.totalTime: If this is higher than the total database uptime, the database has been in a lock state for too long.
+
+And here’s what the metrics mean in the locks section:
+
+    locks.<type>.acquireCount: Number of times the lock was acquired
+    locks.<type>.acquireWaitCount: Number of times the locks.acquireCount encountered waits because of conflicting locks
+    locks.<type>.timeAcquiringMicros: Cumulative wait time for lock acquisitions, in microseconds
+    locks.deadlockCount: Number of times the lock acquisitions have encountered deadlocks
+
+Each of these possible lock types tracks the above metrics:
+
+    Global: Global locks
+    MMAPV1Journal: Locks to synchronize journal writes
+    Database: Database locks
+    Collection: Collection-related locks
+    Metadata: Metadata-related locks
+    Oplog: Operational log locks
+
+We can also determine the average wait time for a particular lock type by dividing locks.timeAcquiringMicros by the locks.acquireWaitCount. 
+==============================================================
+#
+Examine memory use
+
+When the MMAPv1 storage engine is in use, MongoDB will use memory-mapped files to store data. All available memory will be allocated for this usage if the data set is large enough.
+
+We can use the metrics in the memory section of the serverStatus document to understand how MongoDB is using system memory:
+
+rs0:PRIMARY> db.serverStatus().mem
+{
+	"bits" : 64,
+	"resident" : 87,
+	"virtual" : 1505,
+	"supported" : true,
+	"mapped" : 0,
+	"mappedWithJournal" : 0
+
+    mem.resident: Roughly equivalent to the amount of RAM in megabytes that the database process uses
+    mem.mapped: The amount of memory that the database maps, in megabytes
+
+To see if we’ve exceeded the capacity of our system, we can compare the value of mem.resident to the amount of system memory. If mem.resident exceeds the value of system memory and there’s a large amount of unmapped data on disk, we’ve most likely exceeded system capacity.
+
+If the value of mem.mapped is greater than the amount of system memory, some operations will experience page faults.
+=========================================================
+#
+db.serverStatus().wiredTiger.cache
+{
+	"application threads page read from disk to cache count" : 292,
+	"application threads page read from disk to cache time (usecs)" : 5997,
+	"application threads page write from cache to disk count" : 0,
+	"application threads page write from cache to disk time (usecs)" : 0,
+	"bytes belonging to page images in the cache" : 8434251,
+	"bytes currently in the cache" : 9479095,
+	"bytes not belonging to page images in the cache" : 1044843,
+	"bytes read into cache" : 8009692,
+	"bytes written from cache" : 7918893,
+	"checkpoint blocked page eviction" : 0,
+	"eviction calls to get a page" : 19,
+	"eviction calls to get a page found queue empty" : 19,
+	"eviction calls to get a page found queue empty after locking" : 0,
+	"eviction currently operating in aggressive mode" : 0,
+	"eviction empty score" : 0,
+	"eviction server candidate queue empty when topping up" : 0,
+	"eviction server candidate queue not empty when topping up" : 0,
+	"eviction server evicting pages" : 0,
+	"eviction server slept, because we did not make progress with eviction" : 0,
+	"eviction server unable to reach eviction goal" : 0,
+	"eviction state" : 16,
+	"eviction walks abandoned" : 0,
+	"eviction worker thread active" : 0,
+	"eviction worker thread created" : 0,
+	"eviction worker thread evicting pages" : 0,
+	"eviction worker thread removed" : 0,
+	"eviction worker thread stable number" : 0,
+	"failed eviction of pages that exceeded the in-memory maximum" : 2,
+	"files with active eviction walks" : 0,
+	"files with new eviction walks started" : 0,
+	"force re-tuning of eviction workers once in a while" : 0,
+	"hazard pointer blocked page eviction" : 0,
+	"hazard pointer check calls" : 9,
+	"hazard pointer check entries walked" : 27,
+	"hazard pointer maximum array length" : 3,
+	"in-memory page passed criteria to be split" : 0,
+	"in-memory page splits" : 0,
+	"internal pages evicted" : 0,
+	"internal pages split during eviction" : 0,
+	"leaf pages split during eviction" : 0,
+	"lookaside table insert calls" : 0,
+	"lookaside table remove calls" : 0,
+	"maximum bytes configured" : 3116367872,
+	"maximum page size at eviction" : 0,
+	"modified pages evicted" : 0,
+	"modified pages evicted by application threads" : 0,
+	"overflow pages read into cache" : 0,
+	"overflow values cached in memory" : 0,
+	"page split during eviction deepened the tree" : 0,
+	"page written requiring lookaside records" : 0,
+	"pages currently held in the cache" : 306,
+	"pages evicted because they exceeded the in-memory maximum" : 0,
+	"pages evicted because they had chains of deleted items" : 7,
+	"pages evicted by application threads" : 0,
+	"pages queued for eviction" : 0,
+	"pages queued for urgent eviction" : 0,
+	"pages queued for urgent eviction during walk" : 0,
+	"pages read into cache" : 307,
+	"pages read into cache requiring lookaside entries" : 0,
+	"pages requested from the cache" : 69286,
+	"pages seen by eviction walk" : 0,
+	"pages selected for eviction unable to be evicted" : 2,
+	"pages walked for eviction" : 0,
+	"pages written from cache" : 984,
+	"pages written requiring in-memory restoration" : 0,
+	"percentage overhead" : 8,
+	"tracked bytes belonging to internal pages in the cache" : 80332,
+	"tracked bytes belonging to leaf pages in the cache" : 9398763,
+	"tracked dirty bytes in the cache" : 229537,
+	"tracked dirty pages in the cache" : 2,
+	"unmodified pages evicted" : 7
+}
+
+#
+    wiredTiger.cache.maximum bytes configured: This is the maximum cache size.
+    wiredTiger.cache.bytes currently in the cache – This is the size of the data currently in the cache. This should not be greater than the maximum bytes configured.
+    wiredTiger.cache.tracked dirty bytes in the cache – This is the size of the dirty data in the cache. This value should be less than the bytes currently in the cache value.
+
+Looking at these values, we can determine if we need to up the size of the cache for our instance.
+Additionally, we can look at the wiredTiger.cache.bytes read into cache value for read-heavy applications. 
+If this value is consistently high, increasing the cache size may improve overall read performance.
+
+===========================================
+#rs0:PRIMARY> db.serverStatus().connections
+{ "current" : 7, "available" : 812, "totalCreated" : 75 }
+
+There are two fields here we want to look at:
+
+    connections.current: The total number of current clients connected to this instance
+    connections.available: The total number of unused connections available to clients for this instance
+
+If connection issues are a problem, there are a couple of strategies for resolving them. First, check whether the application is read-heavy. If it is, increase the size of the replica set and distribute the read operations to secondary members of the set. If this application is write-heavy, use sharding within a sharded cluster to distribute the load.
+
+Application- or driver-related errors can also cause connection issues. For instance, a connection may be disposed of improperly or may open when not needed, if there’s a bug in the driver or application. You’ll see this if the number of connections is high, but there’s no corresponding workload.
