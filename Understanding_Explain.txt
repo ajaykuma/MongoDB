@@ -1,0 +1,91 @@
+Understanding Explain:
+explain.queryPlanner
+Contains information on the selection of the query plan by the query optimizer.
+
+explain.queryPlanner.namespace
+A string that specifies the namespace (i.e., <database>.<collection>) against which the query is run.
+
+explain.queryPlanner.indexFilterSet
+A boolean that specifies whether MongoDB applied an index filter for the query shape.
+
+explain.queryPlanner.winningPlan
+A document that details the plan selected by the query optimizer. MongoDB presents the plan as a tree of stages; i.e. a stage can have an inputStage or, if the stage has multiple child stages, inputStages.
+
+explain.queryPlanner.winningPlan.stage
+A string that denotes the name of the stage.
+
+Each stage consists of information specific to the stage. For instance, an IXSCAN stage will include the index bounds along with other data specific to the index scan. If a stage has a child stage or multiple child stages, the stage will have an inputStage or inputStages.
+
+explain.queryPlanner.winningPlan.inputStage
+A document that describes the child stage, which provides the documents or index keys to its parent. The field is present if the parent stage has only one child.
+
+explain.queryPlanner.winningPlan.inputStages
+An array of documents describing the child stages. Child stages provide the documents or index keys to the parent stage. The field is present if the parent stage has multiple child nodes. For example, stages for $or expressions or index intersection consume input from multiple sources.
+
+explain.queryPlanner.rejectedPlans
+Array of candidate plans considered and rejected by the query optimizer. The array can be empty if there were no other candidate plans.
+
+explain.executionStats
+Contains statistics that describe the completed query execution for the winning plan. For write operations, completed query execution refers to the modifications that would be performed, but does not apply the modifications to the database.
+
+explain.executionStats.nReturned
+Number of documents that match the query condition. nReturned corresponds to the n field returned by cursor.explain() in earlier versions of MongoDB.
+
+explain.executionStats.executionTimeMillis
+Total time in milliseconds required for query plan selection and query execution. executionTimeMillis corresponds to the millis field returned by cursor.explain() in earlier versions of MongoDB.
+
+explain.executionStats.totalKeysExamined
+Number of index entries scanned. totalKeysExamined corresponds to the nscanned field returned by cursor.explain() in earlier versions of MongoDB.
+
+explain.executionStats.totalDocsExamined
+Number of documents examined during query execution. Common query execution stages that examine documents are COLLSCAN and FETCH.
+
+NOTE
+
+totalDocsExamined refers to the total number of documents examined and not to the number of documents returned. For example, a stage can examine a document in order to apply a filter. If the document is filtered out, then it has been examined but will not be returned as part of the query result set.
+
+If a document is examined multiple times during query execution, totalDocsExamined counts each examination. That is, totalDocsExamined is not a count of the total number of unique documents examined.
+
+explain.executionStats.executionStages
+Details the completed execution of the winning plan as a tree of stages; i.e. a stage can have an inputStage or multiple inputStages.
+
+Each stage consists of execution information specific to the stage.
+
+explain.executionStats.executionStages.works
+Specifies the number of “work units” performed by the query execution stage. Query execution divides its work into small units. A “work unit” might consist of examining a single index key, fetching a single document from the collection, applying a projection to a single document, or doing a piece of internal bookkeeping.
+
+explain.executionStats.executionStages.advanced
+The number of intermediate results returned, or advanced, by this stage to its parent stage.
+
+explain.executionStats.executionStages.needTime
+The number of work cycles that did not advance an intermediate result to its parent stage (see explain.executionStats.executionStages.advanced). For instance, an index scan stage may spend a work cycle seeking to a new position in the index as opposed to returning an index key; this work cycle would count towards explain.executionStats.executionStages.needTime rather than explain.executionStats.executionStages.advanced.
+
+explain.executionStats.executionStages.needYield
+The number of times that the storage layer requested that the query stage suspend processing and yield its locks.
+
+explain.executionStats.executionStages.saveState
+The number of times that the query stage suspended processing and saved its current execution state, for example in preparation for yielding its locks.
+
+explain.executionStats.executionStages.restoreState
+The number of times that the query stage restored a saved execution state, for example after recovering locks that it had previously yielded.
+
+explain.executionStats.executionStages.isEOF
+Specifies whether the execution stage has reached end of stream:
+
+If true or 1, the execution stage has reached end-of-stream.
+If false or 0, the stage may still have results to return. For example, consider a query with a limit whose execution stages consists of a LIMIT stage with an input stage of IXSCAN for the query. If the query returns more than the specified limit, the LIMIT stage will report isEOF: 1, but its underlying IXSCAN stage will report isEOF: 0.
+explain.executionStats.executionStages.inputStage.keysExamined
+For query execution stages that scan an index (e.g. IXSCAN), keysExamined is the total number of in-bounds and out-of-bounds keys that are examined in the process of the index scan. If the index scan consists of a single contiguous range of keys, only in-bounds keys need to be examined. If the index bounds consists of several key ranges, the index scan execution process may examine out-of-bounds keys in order to skip from the end of one range to the beginning of the next.
+
+explain.executionStats.executionStages.inputStage.docsExamined
+Specifies the number of documents scanned during the query execution stage.
+
+Present for the COLLSCAN stage, as well as for stages that retrieve documents from the collection (e.g. FETCH)
+
+explain.executionStats.executionStages.inputStage.seeks
+New in version 3.4: For index scan (IXSCAN) stages only.
+
+The number of times that we had to seek the index cursor to a new position in order to complete the index scan.
+
+explain.executionStats.allPlansExecution
+Contains partial execution information captured during the plan selection phase for both the winning and rejected plans. The field is present only if explain runs in allPlansExecution verbosity mode.
