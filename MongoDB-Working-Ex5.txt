@@ -1,0 +1,1050 @@
+#Create db>collection>insert documents
+rs0:PRIMARY> show dbs
+admin   0.000GB
+config  0.000GB
+local   0.000GB
+
+rs0:PRIMARY> use coll1
+switched to db coll1
+
+rs0:PRIMARY> db.coll1.save({"name":"Peter"})
+WriteResult({ "nInserted" : 1 })
+
+rs0:PRIMARY> show dbs
+admin   0.000GB
+coll1   0.000GB
+config  0.000GB
+local   0.000GB
+
+rs0:PRIMARY> db.coll1.find()
+{ "_id" : ObjectId("5e39d21f531a413ee181db54"), "name" : "Peter" }
+
+rs0:PRIMARY> db.coll1.save({"name":"Patrick","age":50})
+WriteResult({ "nInserted" : 1 })
+
+rs0:PRIMARY> db.coll1.find()
+{ "_id" : ObjectId("5e39d21f531a413ee181db54"), "name" : "Peter" }
+{ "_id" : ObjectId("5e39d2b6531a413ee181db55"), "name" : "Patrick", "age" : 50 }
+
+rs0:PRIMARY> db.coll1.save({"name":"Genie","age":25,"Tasks":["magic","tricks"],"address":{"city":"nyc","street":95}} )
+WriteResult({ "nInserted" : 1 })
+
+rs0:PRIMARY> db.coll1.find()
+{ "_id" : ObjectId("5e39d21f531a413ee181db54"), "name" : "Peter" }
+{ "_id" : ObjectId("5e39d2b6531a413ee181db55"), "name" : "Patrick", "age" : 50 }
+{ "_id" : ObjectId("5e39d3a2531a413ee181db56"), "name" : "Genie", "age" : 25, "Tasks" : [ "magic", "tricks" ], "address" : { "city" : "nyc", "street" : 95 } }
+
+rs0:PRIMARY> db.coll1.find().pretty()
+{ "_id" : ObjectId("5e39d21f531a413ee181db54"), "name" : "Peter" }
+{
+	"_id" : ObjectId("5e39d2b6531a413ee181db55"),
+	"name" : "Patrick",
+	"age" : 50
+}
+{
+	"_id" : ObjectId("5e39d3a2531a413ee181db56"),
+	"name" : "Genie",
+	"age" : 25,
+	"Tasks" : [
+		"magic",
+		"tricks"
+	],
+	"address" : {
+		"city" : "nyc",
+		"street" : 95
+	}
+}
+
+rs0:PRIMARY> db.coll1.find({"Tasks":"magic"})
+{ "_id" : ObjectId("5e39d3a2531a413ee181db56"), "name" : "Genie", "age" : 25, "Tasks" : [ "magic", "tricks" ], "address" : { "city" : "nyc", "street" : 95 } }
+
+#Note _id has a default unique index created on itself
+rs0:PRIMARY> db.coll1.getIndexKeys()
+[ { "_id" : 1 } ]
+
+rs0:PRIMARY> db.coll1.getIndexes()
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "coll1.coll1"
+	}
+]
+
+
+#Creating index on a specific field
+rs0:PRIMARY> db.coll1.createIndex({"name": -1})
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 1,
+	"numIndexesAfter" : 2,
+	"ok" : 1,
+	"operationTime" : Timestamp(1580849814, 1),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1580849814, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+
+rs0:PRIMARY> db.coll1.getIndexes()
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "coll1.coll1"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"name" : -1
+		},
+		"name" : "name_-1",
+		"ns" : "coll1.coll1"
+	}
+]
+
+#Creating index with specific name and on multiple fields (compound index)
+rs0:PRIMARY> db.coll1.createIndex({"name": -1,"age":1},{name:"ReqIndex"})
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 2,
+	"numIndexesAfter" : 3,
+	"ok" : 1,
+	"operationTime" : Timestamp(1580850462, 1),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1580850462, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+rs0:PRIMARY> db.coll1.getIndexes()
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "coll1.coll1"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"name" : -1
+		},
+		"name" : "name_-1",
+		"ns" : "coll1.coll1"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"name" : -1,
+			"age" : 1
+		},
+		"name" : "ReqIndex",
+		"ns" : "coll1.coll1"
+	}
+]
+
+#creating index on a field in embedded documents
+rs0:PRIMARY> db.coll1.createIndex({"address.city":1})
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 3,
+	"numIndexesAfter" : 4,
+	"ok" : 1,
+	"operationTime" : Timestamp(1580856857, 2),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1580856857, 2),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+rs0:PRIMARY> db.coll1.getIndexes()
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "coll1.coll1"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"name" : -1
+		},
+		"name" : "name_-1",
+		"ns" : "coll1.coll1"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"name" : -1,
+			"age" : 1
+		},
+		"name" : "ReqIndex",
+		"ns" : "coll1.coll1"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"address.city" : 1
+		},
+		"name" : "address.city_1",
+		"ns" : "coll1.coll1"
+	}
+]
+
+#create an index on embedded document
+rs0:PRIMARY> db.coll1.createIndex({"address":1})
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 4,
+	"numIndexesAfter" : 5,
+	"ok" : 1,
+	"operationTime" : Timestamp(1580857142, 1),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1580857142, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+rs0:PRIMARY> db.coll1.getIndexes()
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "coll1.coll1"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"name" : -1
+		},
+		"name" : "name_-1",
+		"ns" : "coll1.coll1"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"name" : -1,
+			"age" : 1
+		},
+		"name" : "ReqIndex",
+		"ns" : "coll1.coll1"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"address.city" : 1
+		},
+		"name" : "address.city_1",
+		"ns" : "coll1.coll1"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"address" : 1
+		},
+		"name" : "address_1",
+		"ns" : "coll1.coll1"
+	}
+]
+
+#altering an index,dropping index and recreating it as Unique Index
+rs0:PRIMARY> db.coll1.createIndex({"name": -1},{unique:true})
+{
+	"operationTime" : Timestamp(1580858008, 1),
+	"ok" : 0,
+	"errmsg" : "Index with name: name_-1 already exists with different options",
+	"code" : 85,
+	"codeName" : "IndexOptionsConflict",
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1580858008, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+
+rs0:PRIMARY> db.coll1.dropIndex({"name":-1})
+{
+	"nIndexesWas" : 5,
+	"ok" : 1,
+	"operationTime" : Timestamp(1580858069, 1),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1580858069, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+
+rs0:PRIMARY> db.coll1.getIndexes()
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "coll1.coll1"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"name" : -1,
+			"age" : 1
+		},
+		"name" : "ReqIndex",
+		"ns" : "coll1.coll1"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"address.city" : 1
+		},
+		"name" : "address.city_1",
+		"ns" : "coll1.coll1"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"address" : 1
+		},
+		"name" : "address_1",
+		"ns" : "coll1.coll1"
+	}
+]
+
+rs0:PRIMARY> db.coll1.createIndex({"name": -1},{unique:true})
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 4,
+	"numIndexesAfter" : 5,
+	"ok" : 1,
+	"operationTime" : Timestamp(1580858097, 1),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1580858097, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+
+#Testing uniqueness of a field based on unique index created
+
+rs0:PRIMARY> db.coll1.find()
+{ "_id" : ObjectId("5e39d21f531a413ee181db54"), "name" : "Peter" }
+{ "_id" : ObjectId("5e39d2b6531a413ee181db55"), "name" : "Patrick", "age" : 50 }
+{ "_id" : ObjectId("5e39d3a2531a413ee181db56"), "name" : "Genie", "age" : 25, "Tasks" : [ "magic", "tricks" ], "address" : { "city" : "nyc", "street" : 95 } }
+
+rs0:PRIMARY> db.coll1.save({"name":"Genie","age":26,"Tasks":["magic","trick"],"address":{"city":"ny","street":94}} )
+WriteResult({
+	"nInserted" : 0,
+	"writeError" : {
+		"code" : 11000,
+		"errmsg" : "E11000 duplicate key error collection: coll1.coll1 index: name_-1 dup key: { : \"Genie\" }"
+	}
+})
+
+#create unique compound index
+rs0:PRIMARY> db.coll1.createIndex({"name": 1,"age":1},{unique:true})
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 5,
+	"numIndexesAfter" : 6,
+	"ok" : 1,
+	"operationTime" : Timestamp(1580858600, 1),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1580858600, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+
+#Working with indexes ( Some more examples) + Usage
+#create db-mycustomers and collections (customers,customers1,customers2) #Refer MongoDB-Working-Ex1.txt
+
+rs0:PRIMARY> show dbs
+admin        0.000GB
+config       0.000GB
+local        0.000GB
+mycustomers  0.000GB
+
+rs0:PRIMARY> use mycustomers
+switched to db mycustomers
+
+rs0:PRIMARY> show collections
+customers
+customers1
+customers2
+
+rs0:PRIMARY> db.customers2.find()
+
+rs0:PRIMARY> db.customers2.find({first_name:"junior"})
+{ "_id" : ObjectId("5e3b2d67a978684a91a3e58d"), "first_name" : "junior", "last_name" : "John", "memberships" : [ "club1", "club2", "club3", "club4" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" : { "name" : "Matie", "relationship" : "Friend" } }
+{ "_id" : ObjectId("5e3b2d84a978684a91a3e593"), "first_name" : "junior", "last_name" : "John", "memberships" : [ "club1", "club2", "club3", "club4" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" : { "name" : "Matie", "relationship" : "Friend" } }
+{ "_id" : ObjectId("5e3b2d88a978684a91a3e599"), "first_name" : "junior", "last_name" : "John", "memberships" : [ "club1", "club2", "club3", "club4" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" : { "name" : "Matie", "relationship" : "Friend" } }
+
+#doing a explain 
+#When we do a find,it returns a cursor and using cursor's method explain shows
+--queryPlanner.winningPlan.stage shows COLLSCAN indicating a collection scan,ie mongod had to scan the entire collection  document by document to identify the results which is an 
+  expensive operation and can slow down the query
+--For more details of execution use "executionStats" as shown below
+
+rs0:PRIMARY> db.customers2.find({first_name:"junior"}).explain()
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "mycustomers.customers2",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			"first_name" : {
+				"$eq" : "junior"
+			}
+		},
+		"winningPlan" : {
+			"stage" : "COLLSCAN",
+			"filter" : {
+				"first_name" : {
+					"$eq" : "junior"
+				}
+			},
+			"direction" : "forward"
+		},
+		"rejectedPlans" : [ ]
+	},
+	"serverInfo" : {
+		"host" : "m1",
+		"port" : 27017,
+		"version" : "3.6.17",
+		"gitVersion" : "3d6953c361213c5bfab23e51ab274ce592edafe6"
+	},
+	"ok" : 1,
+	"operationTime" : Timestamp(1580939988, 1),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1580939988, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+
+#Using executionStats shows us more results
+--executionStats.nReturned displays 3 to indicate the query matches and returns 3 documents
+--executionStats.totalKeysExamined displays 0 to indicate that this query is not using an index
+--executionStats.totalDocsExamined displays 18 to indicate mongodb had to scan 18 documents to find the matching..
+
+rs0:PRIMARY> db.customers2.find({first_name:"junior"}).explain("executionStats")
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "mycustomers.customers2",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			"first_name" : {
+				"$eq" : "junior"
+			}
+		},
+		"winningPlan" : {
+			"stage" : "COLLSCAN",
+			"filter" : {
+				"first_name" : {
+					"$eq" : "junior"
+				}
+			},
+			"direction" : "forward"
+		},
+		"rejectedPlans" : [ ]
+	},
+	"executionStats" : {
+		"executionSuccess" : true,
+		"nReturned" : 3,
+		"executionTimeMillis" : 0,
+		"totalKeysExamined" : 0,
+		"totalDocsExamined" : 18,
+		"executionStages" : {
+			"stage" : "COLLSCAN",
+			"filter" : {
+				"first_name" : {
+					"$eq" : "junior"
+				}
+			},
+			"nReturned" : 3,
+			"executionTimeMillisEstimate" : 0,
+			"works" : 20,
+			"advanced" : 3,
+			"needTime" : 16,
+			"needYield" : 0,
+			"saveState" : 0,
+			"restoreState" : 0,
+			"isEOF" : 1,
+			"invalidates" : 0,
+			"direction" : "forward",
+			"docsExamined" : 18
+		}
+	},
+	"serverInfo" : {
+		"host" : "m1",
+		"port" : 27017,
+		"version" : "3.6.17",
+		"gitVersion" : "3d6953c361213c5bfab23e51ab274ce592edafe6"
+	},
+	"ok" : 1,
+	"operationTime" : Timestamp(1580940408, 1),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1580940408, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+
+#now testing by creating index
+rs0:PRIMARY> db.customers2.ensureIndex({first_name:1})
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 1,
+	"numIndexesAfter" : 2,
+	"ok" : 1,
+	"operationTime" : Timestamp(1580941464, 1),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1580941464, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+
+rs0:PRIMARY> db.customers2.getIndexes()
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "mycustomers.customers2"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"first_name" : 1
+		},
+		"name" : "first_name_1",
+		"ns" : "mycustomers.customers2"
+	}
+]
+
+#Look for differences by doing an explain with "executionStats"
+--queryPlanner.winningPlan.stage shows IXSCAN i.e. usage of index,thus mongod didnot have to scan all documents and only 3 matching documents had to be pulled into memory
+
+
+rs0:PRIMARY> db.customers2.find({first_name:"junior"}).explain("executionStats")
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "mycustomers.customers2",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			"first_name" : {
+				"$eq" : "junior"
+			}
+		},
+		"winningPlan" : {
+			"stage" : "FETCH",
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"keyPattern" : {
+					"first_name" : 1
+				},
+				"indexName" : "first_name_1",
+				"isMultiKey" : false,
+				"multiKeyPaths" : {
+					"first_name" : [ ]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"first_name" : [
+						"[\"junior\", \"junior\"]"
+					]
+				}
+			}
+		},
+		"rejectedPlans" : [ ]
+	},
+	"executionStats" : {
+		"executionSuccess" : true,
+		"nReturned" : 3,
+		"executionTimeMillis" : 1,
+		"totalKeysExamined" : 3,
+		"totalDocsExamined" : 3,
+		"executionStages" : {
+			"stage" : "FETCH",
+			"nReturned" : 3,
+			"executionTimeMillisEstimate" : 0,
+			"works" : 4,
+			"advanced" : 3,
+			"needTime" : 0,
+			"needYield" : 0,
+			"saveState" : 0,
+			"restoreState" : 0,
+			"isEOF" : 1,
+			"invalidates" : 0,
+			"docsExamined" : 3,
+			"alreadyHasObj" : 0,
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"nReturned" : 3,
+				"executionTimeMillisEstimate" : 0,
+				"works" : 4,
+				"advanced" : 3,
+				"needTime" : 0,
+				"needYield" : 0,
+				"saveState" : 0,
+				"restoreState" : 0,
+				"isEOF" : 1,
+				"invalidates" : 0,
+				"keyPattern" : {
+					"first_name" : 1
+				},
+				"indexName" : "first_name_1",
+				"isMultiKey" : false,
+				"multiKeyPaths" : {
+					"first_name" : [ ]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"first_name" : [
+						"[\"junior\", \"junior\"]"
+					]
+				},
+				"keysExamined" : 3,
+				"seeks" : 1,
+				"dupsTested" : 0,
+				"dupsDropped" : 0,
+				"seenInvalidated" : 0
+			}
+		}
+	},
+	"serverInfo" : {
+		"host" : "m1",
+		"port" : 27017,
+		"version" : "3.6.17",
+		"gitVersion" : "3d6953c361213c5bfab23e51ab274ce592edafe6"
+	},
+	"ok" : 1,
+	"operationTime" : Timestamp(1580941559, 1),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1580941559, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+
+#comparing performance using compound indexes (where order of fields matters) and using Hint
+
+rs0:PRIMARY> db.customers2.createIndex({first_name:1,"contacts.name":1})
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 2,
+	"numIndexesAfter" : 3,
+	"ok" : 1,
+	"operationTime" : Timestamp(1580942505, 1),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1580942505, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+
+rs0:PRIMARY> db.customers2.createIndex({"contacts.name":1,"first_name":1})
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 3,
+	"numIndexesAfter" : 4,
+	"ok" : 1,
+	"operationTime" : Timestamp(1580942544, 1),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1580942544, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+
+rs0:PRIMARY> db.customers2.getIndexes()
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "mycustomers.customers2"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"first_name" : 1
+		},
+		"name" : "first_name_1",
+		"ns" : "mycustomers.customers2"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"first_name" : 1,
+			"contacts.name" : 1
+		},
+		"name" : "first_name_1_contacts.name_1",
+		"ns" : "mycustomers.customers2"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"contacts.name" : 1,
+			"first_name" : 1
+		},
+		"name" : "contacts.name_1_first_name_1",
+		"ns" : "mycustomers.customers2"
+	}
+]
+
+#compare the output, here we may not see difference but in bigger collection ,this can give us which is better compound index
+rs0:PRIMARY> db.customers2.find({first_name:"genie","contacts.name":"john"}).hint({first_name:1,"contacts.name":1}).explain("executionStats")
+rs0:PRIMARY> db.customers2.find({first_name:"genie","contacts.name":"john"}).hint({"contacts.name":1,first_name:1}).explain("executionStats")
+
+#dropping indexes
+rs0:PRIMARY> db.customers2.dropIndexes()
+{
+	"nIndexesWas" : 4,
+	"msg" : "non-_id indexes dropped for collection",
+	"ok" : 1,
+	"operationTime" : Timestamp(1580943986, 3),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1580943986, 3),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+rs0:PRIMARY> db.customers2.getIndexes()
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "mycustomers.customers2"
+	}
+]
+
+
+##
+Creating index on a field of embedded document
+rs0:PRIMARY> db.customers2.createIndex({"address.city":1})
+
+#Test explain
+rs0:PRIMARY> db.customers2.find({"address.city":"dub"}).explain()
+
+rs0:PRIMARY> db.customers2.find({"address.city":"dub"}).explain("executionStats")
+
+##
+Creating an index on a embedded document instead of one of its field
+rs0:PRIMARY> db.customers2.createIndex({"address":1})
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 2,
+	"numIndexesAfter" : 3,
+	"ok" : 1,
+	"operationTime" : Timestamp(1580945159, 1),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1580945159, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+
+#dropping our earlier created index
+rs0:PRIMARY> db.customers2.dropIndex({"address.city":1})
+{
+	"nIndexesWas" : 3,
+	"ok" : 1,
+	"operationTime" : Timestamp(1580945173, 1),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1580945173, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+
+#Testing the same query shows, that this will not use index on "address" as index was on complete document and not any of its field thus making mongod scan all documents 
+rs0:PRIMARY> db.customers2.find({"address.city":"dub"}).explain("executionStats")
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "mycustomers.customers2",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			"address.city" : {
+				"$eq" : "dub"
+			}
+		},
+		"winningPlan" : {
+			"stage" : "COLLSCAN",
+			"filter" : {
+				"address.city" : {
+					"$eq" : "dub"
+				}
+			},
+			"direction" : "forward"
+		},
+		"rejectedPlans" : [ ]
+	},
+	"executionStats" : {
+		"executionSuccess" : true,
+		"nReturned" : 2,
+		"executionTimeMillis" : 0,
+		"totalKeysExamined" : 0,
+		"totalDocsExamined" : 22,
+		"executionStages" : {
+			"stage" : "COLLSCAN",
+			"filter" : {
+				"address.city" : {
+					"$eq" : "dub"
+				}
+			},
+			"nReturned" : 2,
+			"executionTimeMillisEstimate" : 0,
+			"works" : 24,
+			"advanced" : 2,
+			"needTime" : 21,
+			"needYield" : 0,
+			"saveState" : 0,
+			"restoreState" : 0,
+			"isEOF" : 1,
+			"invalidates" : 0,
+			"direction" : "forward",
+			"docsExamined" : 22
+		}
+	},
+	"serverInfo" : {
+		"host" : "m1",
+		"port" : 27017,
+		"version" : "3.6.17",
+		"gitVersion" : "3d6953c361213c5bfab23e51ab274ce592edafe6"
+	},
+	"ok" : 1,
+	"operationTime" : Timestamp(1580945190, 1),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1580945190, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+
+#Thus to benefit from index created on an embedded document, we need to pass the complete document in same order and with same fields as it exists in documents within collection
+
+rs0:PRIMARY> db.customers2.find({"address":{"city":"dublin","country":"Ire"}}).explain("executionStats")
+{
+	"queryPlanner" : {
+		"plannerVersion" : 1,
+		"namespace" : "mycustomers.customers2",
+		"indexFilterSet" : false,
+		"parsedQuery" : {
+			"address" : {
+				"$eq" : {
+					"city" : "dublin",
+					"country" : "Ire"
+				}
+			}
+		},
+		"winningPlan" : {
+			"stage" : "FETCH",
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"keyPattern" : {
+					"address" : 1
+				},
+				"indexName" : "address_1",
+				"isMultiKey" : false,
+				"multiKeyPaths" : {
+					"address" : [ ]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"address" : [
+						"[{ city: \"dublin\", country: \"Ire\" }, { city: \"dublin\", country: \"Ire\" }]"
+					]
+				}
+			}
+		},
+		"rejectedPlans" : [ ]
+	},
+	"executionStats" : {
+		"executionSuccess" : true,
+		"nReturned" : 11,
+		"executionTimeMillis" : 1,
+		"totalKeysExamined" : 11,
+		"totalDocsExamined" : 11,
+		"executionStages" : {
+			"stage" : "FETCH",
+			"nReturned" : 11,
+			"executionTimeMillisEstimate" : 0,
+			"works" : 12,
+			"advanced" : 11,
+			"needTime" : 0,
+			"needYield" : 0,
+			"saveState" : 0,
+			"restoreState" : 0,
+			"isEOF" : 1,
+			"invalidates" : 0,
+			"docsExamined" : 11,
+			"alreadyHasObj" : 0,
+			"inputStage" : {
+				"stage" : "IXSCAN",
+				"nReturned" : 11,
+				"executionTimeMillisEstimate" : 0,
+				"works" : 12,
+				"advanced" : 11,
+				"needTime" : 0,
+				"needYield" : 0,
+				"saveState" : 0,
+				"restoreState" : 0,
+				"isEOF" : 1,
+				"invalidates" : 0,
+				"keyPattern" : {
+					"address" : 1
+				},
+				"indexName" : "address_1",
+				"isMultiKey" : false,
+				"multiKeyPaths" : {
+					"address" : [ ]
+				},
+				"isUnique" : false,
+				"isSparse" : false,
+				"isPartial" : false,
+				"indexVersion" : 2,
+				"direction" : "forward",
+				"indexBounds" : {
+					"address" : [
+						"[{ city: \"dublin\", country: \"Ire\" }, { city: \"dublin\", country: \"Ire\" }]"
+					]
+				},
+				"keysExamined" : 11,
+				"seeks" : 1,
+				"dupsTested" : 0,
+				"dupsDropped" : 0,
+				"seenInvalidated" : 0
+			}
+		}
+	},
+	"serverInfo" : {
+		"host" : "m1",
+		"port" : 27017,
+		"version" : "3.6.17",
+		"gitVersion" : "3d6953c361213c5bfab23e51ab274ce592edafe6"
+	},
+	"ok" : 1,
+	"operationTime" : Timestamp(1580945510, 1),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1580945510, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+
+#even partials passed in above case will return 0 results
+
+#Some more tests using compound indexes
+db.customers2.createIndex({"first_name":1,"last_name":1})
+db.customers2.find({"first_name":"patrick"}).explain("executionStats")
+db.customers2.find({"first_name":"patrick"}).explain("executionStats").queryPlanner
+db.customers2.find({"first_name":"patrick"}).explain("executionStats").queryPlanner.winningPlan
+db.customers2.find({"first_name":"patrick"}).explain("executionStats").queryPlanner.winningPlan.stage
+db.customers2.find({"first_name":"patrick"}).explain("executionStats").executionStats.totalKeysExamined
+OR
+db.customers2.find({"first_name":"patrick"}).explain("queryPlanner")
+
+
+and now test with just second field of compound index
+rs0:PRIMARY> db.customers2.find({"last_name":"sullivan"}).explain("executionStats").executionStats.totalDocsExamined
+#shows index wasnt used and collection scan happened
+
+#Creating a unique compound index fails if duplicate values for that combination already exist
+rs0:PRIMARY> db.customers2.createIndex({"first_name":1,"address.city":1},{unique:1,sparse:1})
+#sparse will ensure records that are defined within the index
+{
+	"operationTime" : Timestamp(1580946690, 1),
+	"ok" : 0,
+	"errmsg" : "E11000 duplicate key error collection: mycustomers.customers2 index: first_name_1_address.city_1 dup key: { : \"genie\", : \"belfast\" }",
+	"code" : 11000,
+	"codeName" : "DuplicateKey",
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1580946690, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+
+#|||ly rs0:PRIMARY> db.customers2.createIndex({"first_name":1},{unique:1})
+

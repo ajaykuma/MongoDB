@@ -1,0 +1,7 @@
+show dbs
+use newdb1
+use mycust
+db.nonImpCustomers.insert({"name":"John"})
+db.nonImpCustomers.find()
+db.nonImpCustomers.insert({"name":"John","city":"berlin"})
+db.nonImpCustomers.find().pretty()

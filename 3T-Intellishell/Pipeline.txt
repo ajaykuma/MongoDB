@@ -1,0 +1,37 @@
+db.getCollection("Affordable_housing_chicago").aggregate(
+
+	// Pipeline
+	[
+		// Stage 1
+		{
+			$match: {
+			    // match is the filter that will provide criteria & returns related documents
+			    "Property Type":"Senior"
+			}
+		},
+
+		// Stage 2
+		{
+			$group: {
+			    //_id: <expression>,
+			    //<field1>: { <accumulator1> : <expression1> },
+			    //...
+			    _id: "$Zip Code",
+			    totalUnits: {$sum: "$Units"}
+			}
+		},
+
+		// Stage 3
+		{
+			$sort: {
+			    //<field1>: <1|-1>,
+			    //<field2>: <1|-1> ...
+			    totalUnits: -1
+			}
+		},
+
+	]
+
+	// Created with Studio 3T, the IDE for MongoDB - https://studio3t.com/
+
+);

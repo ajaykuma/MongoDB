@@ -1,0 +1,8 @@
+Working with 3T
+----------------
+https://studio3t.com/knowledge-base/articles/mongo-shell-intellishell/
+https://docs.mongodb.com/manual/reference/method/
+
+Using Intellishell
+Use examples provided in 'MongoDB-Working-Ex*' files.
+

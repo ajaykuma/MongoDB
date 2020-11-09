@@ -1,0 +1,50 @@
+show dbs
+show collections
+//db.cust.insert({first_name:"Hot",last_name: "Star"})
+db
+//db.createCollection("ImpCustomers")
+show collections
+db.ImpCustomers.insert({first_name:"Hot",last_name: "Star"})
+db.customers.insert({ "_id" : 1, "first_name" : "patrick", "last_name" : "Sullivan", "memberships" : [ "club1", "club2" ], "address" : { "city" : "hilde", "country" : "Ger" }, "contacts" :  { "name" : "Tom", "relationship" : "Friend" } })
+db.customers.insert({ "_id" : 2, "first_name" : "patrick", "last_name" : "John", "memberships" : [ "club1", "club3" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" :  { "name" : "Tom", "relationship" : "Friend" } })
+db.customers.insert({ "_id" : 3, "first_name" : "isaac", "last_name" : "John", "memberships" : [ "club1"], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" :  { "name" : "Mat", "relationship" : "Friend" } })
+db.customers.insert({ "_id" : 4, "first_name" : "junior", "last_name" : "John", "memberships" : [ "club1","club2","club3","club4"], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" :  { "name" : "Matie", "relationship" : "Friend" } })
+db.customers.insert({ "_id" : 5, "first_name" : "genie", "last_name" : "sally", "memberships" : [ "club3","club4"], "address" : { "city" : "belfast", "country" : "uk" }, "contacts" :  { "name" : "Matie", "relationship" : "sister" } })
+db.customers.insert({ "_id" : 6, "first_name" : "genie", "last_name" : "sally", "memberships" : [ "club3","club4"], "address" : { "city" : "belfast", "country" : "uk" }, "contacts" :  { "name" : "john", "relationship" : "brother" } })
+
+db.customers.find()
+show collections
+db.customers1.insert([
+{ "_id" : 1, "first_name" : "patrick", "last_name" : "Sullivan", "memberships" : [ "club1", "club2" ], "address" : { "city" : "hilde", "country" : "Ger" }, "contacts" : { "name" : "Tom", "relationship" : "Friend" } },
+{ "_id" : 2, "first_name" : "patrick", "last_name" : "John", "memberships" : [ "club1", "club3" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" : { "name" : "Tom", "relationship" : "Friend" } },
+{ "_id" : 3, "first_name" : "isaac", "last_name" : "John", "memberships" : [ "club1" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" : { "name" : "Mat", "relationship" : "Friend" } },
+{ "_id" : 4, "first_name" : "junior", "last_name" : "John", "memberships" : [ "club1", "club2", "club3", "club4" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" : { "name" : "Matie", "relationship" : "Friend" } },
+{ "_id" : 5, "first_name" : "genie", "last_name" : "sally", "memberships" : [ "club3", "club4" ], "address" : { "city" : "belfast", "country" : "uk" }, "contacts" : { "name" : "Matie", "relationship" : "sister" } },
+{ "_id" : 6, "first_name" : "genie", "last_name" : "sally", "memberships" : [ "club3", "club4" ], "address" : { "city" : "belfast", "country" : "uk" }, "contacts" : { "name" : "john", "relationship" : "brother" } }
+])
+show collections
+
+//specifying without _id
+db.customers1.insert([
+{ "first_name" : "patrick", "last_name" : "Sullivan", "memberships" : [ "club1", "club2" ], "address" : { "city" : "hilde", "country" : "Ger" }, "contacts" : { "name" : "Tom", "relationship" : "Friend" } },
+{ "first_name" : "patrick", "last_name" : "John", "memberships" : [ "club1", "club3" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" : { "name" : "Tom", "relationship" : "Friend" } },
+{ "first_name" : "isaac", "last_name" : "John", "memberships" : [ "club1" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" : { "name" : "Mat", "relationship" : "Friend" } },
+{ "first_name" : "junior", "last_name" : "John", "memberships" : [ "club1", "club2", "club3", "club4" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" : { "name" : "Matie", "relationship" : "Friend" } },
+{ "first_name" : "genie", "last_name" : "sally", "memberships" : [ "club3", "club4" ], "address" : { "city" : "belfast", "country" : "uk" }, "contacts" : { "name" : "Matie", "relationship" : "sister" } },
+{ "first_name" : "genie", "last_name" : "sally", "memberships" : [ "club3", "club4" ], "address" : { "city" : "belfast", "country" : "uk" }, "contacts" : { "name" : "john", "relationship" : "brother" } }
+])
+
+db.customers1.find()
+
+db.customers1.insert([{ "first_name" : "isaak", "last_name" : "John", "memberships" : [ "club1", "club3" ], "address" : { "city" : "dub", "country" : "Ire" }, "contacts" : { "name" : "Mat", "relationship" : "Friend" } },
+{ "first_name" : "isaaac", "last_name" : "Johny", "memberships" : [ "club1" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" : { "name" : "Maty", "relationship" : "Friend" } }
+])
+
+db.customers1.count()
+
+
+
+
+
+
+

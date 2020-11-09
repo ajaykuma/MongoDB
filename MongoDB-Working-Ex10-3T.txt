@@ -1,0 +1,49 @@
+Affordable_housing_chicago
+------------------
+Aggregation example:
+import data from github or from kaggle
+
+--Create DB(newdb)
+--Create collection(Affordable_housing_chicago)
+--Import Data from downloads csv
+--Verify the data inserted in collection
+
+Problem:
+Which zip code has the greatest number of senior housing units available?
+Stages involved would be
+-select number of "senior" housing units
+-count the number of units available by zip code
+-sort zip codes by greatest number of units available
+
+Click and select collection and click on Aggregate
+Execute Full pipeline and look at Pipeline Output (in Tree View)>Expand an item to look at details
+Look at 'property type' field which can be used to create a match on 'senior types'
+
+Add a new stage:
+$match
+{
+    // match is the filter that will provide criteria & returns related documents
+    
+}
+
+execute.. and check results
+
+Add a new stage:
+$group
+{
+    //_id: <expression>,
+    //<field1>: { <accumulator1> : <expression1> },
+    //...
+    _id: "$Zip Code",
+    totalUnits: {$sum: "$Units"}
+}
+
+Add a new stage:
+$sort
+{
+totalUnits: -1
+}
+
+execute full pipeline and view the results
+save the pipeline..
+

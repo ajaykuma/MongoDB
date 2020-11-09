@@ -1,0 +1,52 @@
+Build Indexes on Replica Sets: Rolling Procedure
+To minimize the impact of building an index on replica set deployments, build indexes in a rolling fashion.
+
+This procedure for replica set deployments takes one member out of the replica set at a time. 
+However, this procedure will only affect one member of the set at a time rather than all secondaries at the same
+time. 
+
+To create unique indexes , you must stop all writes to the collection during the build.
+**Otherwise, you may end up with inconsistent data across the replica set members.
+
+Oplog:Ensure that your oplog is large enough to permit the indexing or re-indexing operation to complete 
+without falling too far behind to catch up. 
+
+#A. Stop One Secondary and Restart as a Standalone
+#Example: m1-secondary,m2-primary,m3-secondary
+#on m1
+--stop mongod process
+--start mongod as standalone on a different port and with below mentioned paramter
+--By running the mongod on a different port, you ensure that the other members of the replica set and 
+--all clients will not contact the member while you are building the index.
+
+$mongod --port 27217 --setParameter disableLogicalSessionCacheRefresh=true
+--connect to this mongod instance and create index
+
+>db.coll1.createIndex( { age: 1 } )
+
+--When the index build completes, shutdown the mongod instance. 
+--Undo the configuration changes made when starting as a standalone to return the its original configuration
+--and restart as a member of the replica set.
+
+#Once the member catches up with the other members of the set, repeat the procedure one member at a time 
+#for the remaining secondary members (ie m3 in our case)
+
+#When all the secondaries have the new index, step down the primary, restart it as a standalone as described 
+#above, and build the index on the former primary.
+i.e. on m2
+--when connected to primary using mongo
+>rs.stepDown()
+
+#Upon successful stepdown, the current primary becomes a secondary and the replica set members 
+#select a new primary.
+--stop mongod process
+--start mongod as standalone on a different port and with mentioned parameter
+--build the index as done on secondaries
+--restart mongod as a replica set member
+
+
+
+
+
+
+	

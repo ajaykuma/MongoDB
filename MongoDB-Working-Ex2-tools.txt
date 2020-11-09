@@ -1,0 +1,128 @@
+hdc1@c1:~$ mongostat
+insert query update delete getmore command dirty used flushes vsize   res qrw arw net_in net_out conn                time
+    *0    *0     *0     *0       0     2|0  0.0% 0.0%       0  934M 58.0M 0|0 1|0   158b   47.3k    1 May  1 07:03:43.950
+    *0    *0     *0     *0       0     2|0  0.0% 0.0%       0  934M 58.0M 0|0 1|0   158b   47.1k    1 May  1 07:03:44.950
+    *0    *0     *0     *0       0     1|0  0.0% 0.0%       0  934M 58.0M 0|0 1|0   157b   47.0k    1 May  1 07:03:45.952
+    *0    *0     *0     *0       0     2|0  0.0% 0.0%       0  934M 58.0M 0|0 1|0   158b   47.2k    1 May  1 07:03:46.949
+    *0    *0     *0     *0       0     2|0  0.0% 0.0%       0  934M 58.0M 0|0 1|0   158b   47.1k    1 May  1 07:03:47.949
+
+hdc1@c1:~$ mongotop
+2019-05-01T07:06:15.162+0000	connected to: 127.0.0.1
+
+                      ns    total    read    write    2019-05-01T07:06:16Z
+      admin.system.roles      0ms     0ms      0ms                        
+    admin.system.version      0ms     0ms      0ms                        
+       local.startup_log      0ms     0ms      0ms                        
+    local.system.replset      0ms     0ms      0ms                        
+mycustomers.ImpCustomers      0ms     0ms      0ms                        
+   mycustomers.customers      0ms     0ms      0ms                        
+           test.firstdoc      0ms     0ms      0ms                        
+
+                      ns    total    read    write    2019-05-01T07:06:17Z
+      admin.system.roles      0ms     0ms      0ms                        
+    admin.system.version      0ms     0ms      0ms                        
+       local.startup_log      0ms     0ms      0ms                        
+    local.system.replset      0ms     0ms      0ms                        
+mycustomers.ImpCustomers      0ms     0ms      0ms                        
+   mycustomers.customers      0ms     0ms      0ms                        
+           test.firstdoc      0ms     0ms      0ms                        
+
+hdc1@c1:~$ mongoexport -d mycustomers -c customers > customersData.json
+2019-05-01T07:09:14.064+0000	connected to: localhost
+2019-05-01T07:09:14.065+0000	exported 2 records
+
+hdc1@c1:~$ ls customersData.json 
+customersData.json
+
+hdc1@c1:~$ cat customersData.json 
+{"_id":{"$oid":"5cc936c61cd2cda82061b0e5"},"first_name":"Cool","last_name":"Singh","memberships":["club1","club2"],"address":{"city":"hilde","country":"Ger"},"contacts":[{"name":"Tom","relationship":"Friend"}]}
+{"_id":{"$oid":"5cc938641cd2cda82061b0e6"},"first_name":"Hot","last_name":"Singh"}
+
+hdc1@c1:~$ mongoimport -d mycustomers -c customersCopy < customersData.json
+2019-05-01T07:12:35.869+0000	connected to: localhost
+2019-05-01T07:12:35.952+0000	imported 2 documents
+
+> use mycustomers
+switched to db mycustomers
+> show collections
+ImpCustomers
+customers
+customersCopy
+> db.customersCopy.find().pretty()
+{
+	"_id" : ObjectId("5cc936c61cd2cda82061b0e5"),
+	"first_name" : "Cool",
+	"last_name" : "Singh",
+	"memberships" : [
+		"club1",
+....
+
+#Taking Binary backup or MOngoDB DBs/dump
+hdc1@c1:~$ mongodump
+2019-05-01T07:15:36.742+0000	writing admin.system.version to 
+2019-05-01T07:15:36.744+0000	done dumping admin.system.version (1 document)
+2019-05-01T07:15:36.744+0000	writing mycustomers.customers to 
+2019-05-01T07:15:36.744+0000	writing mycustomers.customersCopy to 
+2019-05-01T07:15:36.744+0000	writing mycustomers.ImpCustomers to 
+2019-05-01T07:15:36.744+0000	writing test.firstdoc to 
+2019-05-01T07:15:36.745+0000	done dumping mycustomers.customersCopy (2 documents)
+2019-05-01T07:15:36.745+0000	done dumping mycustomers.customers (2 documents)
+2019-05-01T07:15:36.747+0000	done dumping test.firstdoc (1 document)
+2019-05-01T07:15:36.747+0000	done dumping mycustomers.ImpCustomers (1 document)
+
+#looking at dump created
+hdc1@c1:~$ ls
+customersData.json  dump  MongoDB-Working-Ex1.txt
+hdc1@c1:~$ ls dump/
+admin  mycustomers  test
+hdc1@c1:~$ ls dump/admin
+system.version.bson  system.version.metadata.json
+hdc1@c1:~$ ls dump/mycustomers/
+customers.bson  customersCopy.bson  customersCopy.metadata.json  customers.metadata.json  ImpCustomers.bson  ImpCustomers.metadata.json
+hdc1@c1:~$ ls dump/test/
+firstdoc.bson  firstdoc.metadata.json
+
+#using bsondump
+hdc1@c1:~$ bsondump dump/mycustomers/customers.bson > testData.json
+2019-05-01T07:19:43.663+0000	2 objects found
+hdc1@c1:~$ ls
+customersData.json  dump  MongoDB-Working-Ex1.txt  testData.json
+hdc1@c1:~$ cat testData.json 
+{"_id":{"$oid":"5cc936c61cd2cda82061b0e5"},"first_name":"Cool","last_name":"Singh","memberships":["club1","club2"],"address":{"city":"hilde","country":"Ger"},"contacts":[{"name":"Tom","relationship":"Friend"}]}
+{"_id":{"$oid":"5cc938641cd2cda82061b0e6"},"first_name":"Hot","last_name":"Singh"}
+
+#getting dump based on a query
+root@m1:~# mongodump --host m1
+2019-10-01T21:43:58.601+0200	writing admin.system.version to 
+2019-10-01T21:43:58.601+0200	done dumping admin.system.version (1 document)
+2019-10-01T21:43:58.602+0200	writing test.emp to 
+2019-10-01T21:43:58.602+0200	writing admin.system.profile to 
+2019-10-01T21:43:58.604+0200	done dumping admin.system.profile (0 documents)
+2019-10-01T21:43:58.791+0200	done dumping test.emp (87855 documents)
+
+root@m1:~# ls
+dump  mygit
+
+root@m1:~# ls dump
+admin  test
+
+root@m1:~# ls dump/admin
+system.profile.bson           system.version.bson
+system.profile.metadata.json  system.version.metadata.json
+
+root@m1:~# mongodump --host m1 --out dump -d test -c emp --query "{empid : 2}"
+2019-10-01T21:45:40.864+0200	writing test.emp to 
+2019-10-01T21:45:40.928+0200	done dumping test.emp (2 documents)
+
+root@m1:~# ls dump/admin
+system.profile.bson           system.version.bson
+system.profile.metadata.json  system.version.metadata.json
+
+root@m1:~# ls dump/
+admin  test
+
+root@m1:~# ls dump/test
+emp.bson  emp.metadata.json
+
+#For more examples refer:MongoDB working-2.txt
+

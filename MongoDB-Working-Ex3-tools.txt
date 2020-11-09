@@ -1,0 +1,288 @@
+Tools
+
+Different tools
+Note* For linux replace/remove .exe and run commands from terminal.
+
+For example :
+mongostat --host hostname 
+insert query update delete getmore command % dirty % used flushes vsize   res qr|qw ar|aw netIn netOut conn                      time
+    *0    *0     *0     *0       0     1|0     0.0    0.0       0 4.20G 19.0M   0|0   0|0   79b  21.9k    1 2018-12-10T22:50:12+01:00
+    *0    *0     *0     *0       0     1|0     0.0    0.0       0 4.20G 19.0M   0|0   0|0   79b  21.9k    1 2018-12-10T22:50:13+01:00
+    *0    *0     *0     *0       0     1|0     0.0    0.0       0 4.20G 19.0M   0|0   0|0   79b  21.9k    1 2018-12-10T22:50:14+01:00
+    *0    *0     *0     *0       0     1|0     0.0    0.0       0 4.20G 19.0M   0|0   0|0   79b  21.9k    1 2018-12-10T22:50:15+01:00
+Note** run mongostat and parallely test insert,querying,importing data to look at stats.
+
+mongotop --host hostname
+
+                         ns    total    read    write    2018-12-10T22:51:19+01:00
+         admin.system.roles      0ms     0ms      0ms
+         admin.system.users      0ms     0ms      0ms
+       admin.system.version      0ms     0ms      0ms
+  customerpref.customerpref      0ms     0ms      0ms
+          local.startup_log      0ms     0ms      0ms
+       local.system.replset      0ms     0ms      0ms
+      mycustomers.customers      0ms     0ms      0ms
+         mycustomers.test12      0ms     0ms      0ms
+ test12.test12.mycollection      0ms     0ms      0ms
+test12.test123.mycollection      0ms     0ms      0ms
+
+                         ns    total    read    write    2018-12-10T22:51:20+01:00
+         admin.system.roles      0ms     0ms      0ms
+         admin.system.users      0ms     0ms      0ms
+       admin.system.version      0ms     0ms      0ms
+  customerpref.customerpref      0ms     0ms      0ms
+          local.startup_log      0ms     0ms      0ms
+       local.system.replset      0ms     0ms      0ms
+      mycustomers.customers      0ms     0ms      0ms
+         mycustomers.test12      0ms     0ms      0ms
+ test12.test12.mycollection      0ms     0ms      0ms
+test12.test123.mycollection      0ms     0ms      0ms
+Note** Look at collection level stats in terms or read and write
+
+mongoexport -d mycustomers -c customers > customers.json
+cat customers.json
+{"_id":{"$oid":"5c0e47fdcb6ad0065017fc5d"},"first_name":"aj","last_name":"singh","gender":"male"}
+{"_id":{"$oid":"5c0e48f6cb6ad0065017fc5f"},"first_name":"daj","last_name":"singh","gender":"male"}
+{"_id":{"$oid":"5c0e58f6cb6ad0065017fc60"},"first_name":"ddcaj","last_name":"singhi"}
+{"_id":{"$oid":"5c0e58f6cb6ad0065017fc61"},"first_name":"dddaj","last_name":"singhy","gender":"male"}
+{"_id":{"$oid":"5c0e598ecb6ad0065017fc62"},"first_name":"ddcajy","last_name":"singhiy"}
+{"_id":{"$oid":"5c0e598ecb6ad0065017fc63"},"first_name":"dddajy","last_name":"singhyy","address":{"street":23.0,"houseno":104.0}}
+
+
+mongoimport -d mycustomers -c customerscopy < customers.json
+2018-12-11T01:41:15.291+0100    connected to: localhost
+2018-12-11T01:41:15.430+0100    imported 6 documents
+
+Taking binary backup of mongodb databases
+mongodump
+2018-12-11T01:43:20.913+0100    writing admin.system.users to
+2018-12-11T01:43:20.915+0100    done dumping admin.system.users (1 document)
+2018-12-11T01:43:20.924+0100    writing admin.system.version to
+2018-12-11T01:43:20.925+0100    done dumping admin.system.version (1 document)
+2018-12-11T01:43:20.935+0100    writing mycustomers.customerscopy to
+2018-12-11T01:43:20.935+0100    writing mycustomers.test12 to
+2018-12-11T01:43:20.936+0100    writing mycustomers.customers to
+2018-12-11T01:43:20.939+0100    writing mycustomers.preferences to
+2018-12-11T01:43:20.972+0100    done dumping mycustomers.customerscopy (6 documents)
+2018-12-11T01:43:20.972+0100    done dumping mycustomers.test12 (2 documents)
+2018-12-11T01:43:20.974+0100    done dumping mycustomers.preferences (0 documents)
+2018-12-11T01:43:20.979+0100    done dumping mycustomers.customers (6 documents)
+2018-12-11T01:43:20.980+0100    writing mycustomers.items to
+2018-12-11T01:43:20.984+0100    done dumping mycustomers.items (0 documents)
+
+Looking into dump created
+\dump$cd admin
+
+dump\admin
+
+12/11/2018  01:43 AM    <DIR>          .
+12/11/2018  01:43 AM    <DIR>          ..
+12/11/2018  01:43 AM               347 system.users.bson
+12/11/2018  01:43 AM               183 system.users.metadata.json
+12/11/2018  01:43 AM                45 system.version.bson
+12/11/2018  01:43 AM                92 system.version.metadata.json
+               4 File(s)            667 bytes
+               2 Dir(s)  261,124,919,296 bytes free
+
+
+\dump>cd mycustomers
+
+\dump\mycustomers
+
+12/11/2018  01:43 AM    <DIR>          .
+12/11/2018  01:43 AM    <DIR>          ..
+12/11/2018  01:43 AM               491 customers.bson
+12/11/2018  01:43 AM                93 customers.metadata.json
+12/11/2018  01:43 AM               491 customerscopy.bson
+12/11/2018  01:43 AM                97 customerscopy.metadata.json
+12/11/2018  01:43 AM                 0 items.bson
+12/11/2018  01:43 AM               129 items.metadata.json
+12/11/2018  01:43 AM                 0 preferences.bson
+12/11/2018  01:43 AM                95 preferences.metadata.json
+12/11/2018  01:43 AM                66 test12.bson
+12/11/2018  01:43 AM                90 test12.metadata.json
+              10 File(s)          1,552 bytes
+               2 Dir(s)  261,124,919,296 bytes free
+
+bsondump dump\mycustomers\preferences.bson > testData.json
+bsondump dump\mycustomers\customerscopy.bson > testData1.json
+2018-12-11T01:48:53.428+0100    6 objects found
+
+cat testData1.json
+{"_id":{"$oid":"5c0e47fdcb6ad0065017fc5d"},"first_name":"aj","last_name":"singh","gender":"male"}
+{"_id":{"$oid":"5c0e598ecb6ad0065017fc62"},"first_name":"ddcajy","last_name":"singhiy"}
+{"_id":{"$oid":"5c0e598ecb6ad0065017fc63"},"first_name":"dddajy","last_name":"singhyy","address":{"street":23.0,"houseno":104.0}}
+{"_id":{"$oid":"5c0e48f6cb6ad0065017fc5f"},"first_name":"daj","last_name":"singh","gender":"male"}
+{"_id":{"$oid":"5c0e58f6cb6ad0065017fc60"},"first_name":"ddcaj","last_name":"singhi"}
+{"_id":{"$oid":"5c0e58f6cb6ad0065017fc61"},"first_name":"dddaj","last_name":"singhy","gender":"male"}
+
+===================
+root@m1:~# mongorestore --host m1 dump/test/emp.bson -d rest
+2019-10-01T21:52:44.581+0200	checking for collection data in dump/test/emp.bson
+2019-10-01T21:52:44.584+0200	reading metadata for rest.emp from dump/test/emp.metadata.json
+2019-10-01T21:52:44.601+0200	restoring rest.emp from dump/test/emp.bson
+2019-10-01T21:52:44.663+0200	no indexes to restore
+2019-10-01T21:52:44.663+0200	finished restoring rest.emp (2 documents)
+2019-10-01T21:52:44.663+0200	done
+
+root@m1:~# mongodump --host m1 
+2019-10-01T21:52:58.463+0200	writing admin.system.version to 
+2019-10-01T21:52:58.463+0200	done dumping admin.system.version (1 document)
+2019-10-01T21:52:58.463+0200	writing test.emp to 
+2019-10-01T21:52:58.464+0200	writing rest.emp to 
+2019-10-01T21:52:58.464+0200	writing admin.system.profile to 
+2019-10-01T21:52:58.465+0200	done dumping rest.emp (2 documents)
+2019-10-01T21:52:58.478+0200	done dumping admin.system.profile (0 documents)
+2019-10-01T21:52:58.670+0200	done dumping test.emp (87855 documents)
+
+root@m1:~# mongo --host m1
+MongoDB shell version v3.4.23
+connecting to: mongodb://m1:27017/
+MongoDB server version: 3.4.23
+Server has startup warnings: 
+2019-10-01T20:26:19.312+0200 I STORAGE  [initandlisten] 
+2019-10-01T20:26:19.312+0200 I STORAGE  [initandlisten] ** WARNING: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine
+2019-10-01T20:26:19.312+0200 I STORAGE  [initandlisten] **          See http://dochub.mongodb.org/core/prodnotes-filesystem
+2019-10-01T20:26:19.663+0200 I CONTROL  [initandlisten] 
+2019-10-01T20:26:19.663+0200 I CONTROL  [initandlisten] ** WARNING: Access control is not enabled for the database.
+2019-10-01T20:26:19.663+0200 I CONTROL  [initandlisten] **          Read and write access to data and configuration is unrestricted.
+2019-10-01T20:26:19.663+0200 I CONTROL  [initandlisten] ** WARNING: You are running this process as the root user, which is not recommended.
+2019-10-01T20:26:19.663+0200 I CONTROL  [initandlisten] 
+
+rs0:PRIMARY> show dbs
+admin  0.000GB
+local  0.004GB
+rest   0.000GB
+test   0.003GB
+
+rs0:PRIMARY> use rest
+switched to db rest
+
+rs0:PRIMARY> show collections
+emp
+
+rs0:PRIMARY> db.emp.find()
+{ "_id" : ObjectId("5d9392cac3f9bbca2b9d2c0b"), "empid" : 2, "name" : "Xyuuuuuuuuvfhjihgsh uwec iwc ewue" }
+{ "_id" : ObjectId("5d939373d6006a5e8d56e126"), "empid" : 2, "name" : "Xyuuuuuuuuvfhjihgsh uwec iwc ewue" }
+rs0:PRIMARY> 
+
+#notice "no indexes were restored"
+#copy contents of /data/db into a new directory and start new mongod process using new directory as dbpath
+#indexes will still not be rebuilt
+#cannot do this while cluster/mongod instance is running
+
+====================
+#mongoperf-to check performance of i/o server independent of mongodb 
+--it performs simple timed random disk i/os
+--has different modes
+mmf:false=====>generic and random physical I/O Test
+mmf:true=====>test is benchmark of memory mapped file based I/O .So this is gud baseline test of system including OS virtual memory.
+
+examples
+check with mmf:false
+contents of testConfig.txt
+{nThreads:16,fileSizeMB:100,r:true}
+
+mongoperf < linuxpath\testConfig.txt"
+mongoperf
+use -h for help
+parsed options:
+{ nThreads: 16, fileSizeMB: 100, r: true }
+creating test file size:100MB ...
+testing...
+options:{ nThreads: 16, fileSizeMB: 100, r: true }
+wthr 16
+new thread, total running : 1
+read:1 write:0
+107 ops/sec 0 MB/sec
+113 ops/sec 0 MB/sec
+121 ops/sec 0 MB/sec
+111 ops/sec 0 MB/sec
+109 ops/sec 0 MB/sec
+98 ops/sec 0 MB/sec
+104 ops/sec 0 MB/sec
+112 ops/sec 0 MB/sec
+new thread, total running : 2
+read:1 write:0
+108 ops/sec 0 MB/sec
+116 ops/sec 0 MB/sec
+110 ops/sec 0 MB/sec
+111 ops/sec 0 MB/sec
+127 ops/sec 0 MB/sec
+107 ops/sec 0 MB/sec
+113 ops/sec 0 MB/sec
+91 ops/sec 0 MB/sec
+read:read:1 write:0
+new thread, total running : 4
+1 write:0
+
+
+check with mmf:true
+Here caching will come into affect,thus shud show very high read speeds if data size is small
+Note** speeds start approaching physical random I/O speed as file sizes grow
+contents of testConfigMMFT
+{recSizeKB:8,nThreads:4,fileSizeMB:100,r:true,mmf:true}
+
+C:\Program Files\MongoDB\Server\3.2\bin>mongoperf.exe < "c:\Users\ajay\Documents\testConfigMMFT.txt"
+mongoperf
+use -h for help
+parsed options:
+{ recSizeKB: 8, nThreads: 4, fileSizeMB: 100, r: true, mmf: true }
+creating test file size:100MB ...
+testing...
+options:{ recSizeKB: 8, nThreads: 4, fileSizeMB: 100, r: true, mmf: true }
+wthr 4
+new thread, total running : 1
+read:1 write:0
+66 ops/sec
+87 ops/sec
+101 ops/sec
+106 ops/sec
+108 ops/sec
+91 ops/sec
+117 ops/sec
+109 ops/sec
+new thread, total running : 2
+read:1 write:0
+1025 ops/sec
+220 ops/sec
+202 ops/sec
+210 ops/sec
+260 ops/sec
+264 ops/sec
+218 ops/sec
+266 ops/sec
+read:1 write:0
+new thread, total running : 4
+read:1 write:0
+4062 ops/sec
+
+Can be useful to check physical I/O operations
+
+#mongofiles
+Provides interface for the objects stored in FS and GridFS (convention for storing large files in mongodb )
+It supports list,put,get,delete, search etc
+
+Putting content in gridFS
+mongofiles --host localhost:27017 -d mycustomers put \testConfig.txt
+2018-12-11T02:30:05.136+0100    connected to: localhost:27017
+added file: \testConfig.txt
+
+copies file from local fs to mongodb gridfs
+
+Listing content from gridFS
+mongofiles --host localhost:27017 -d mycustomers list
+2018-12-11T02:32:39.886+0100    connected to: localhost:27017
+
+\testConfig.txt  35
+
+disconnecting local fs from gridFS
+
+mongofiles --host localhost:27017 delete  \testConfig.txt
+2018-12-11T02:34:21.043+0100    connected to: localhost:27017
+successfully deleted all instances of \testConfig.txt from GridFS
+
+#mongos
+mongodb Shard (routing service for mongodb for sharding configuration)
+This processes queries from appln layer and maintain sharded cluster, thus helps in sharding
+

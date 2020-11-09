@@ -1,0 +1,11 @@
+show dbs
+use mycust
+db.cust.insert({
+"first_name":"Cool",
+"last_name": "Star",
+memberships: ["club1","club2"],
+address: {"city": "hilde","country":"Ger"},
+contacts: [{"name": "Tom","relationship":"Friend"}]})
+show dbs
+
+

@@ -1,0 +1,9 @@
+show dbs
+show collections
+db.cust.find().pretty()
+db.getCollection("cust").find({ "_id": { $exists: true } }).
+sort({})
+db.getCollection("cust").find({ "_id": { $exists: true } }, {}).sort({ "last_name": 1})
+
+
+

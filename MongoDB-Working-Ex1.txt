@@ -1,0 +1,132 @@
+
+
+> show dbs
+admin  0.000GB
+local  0.000GB
+
+> use mycust
+switched to db mycust
+
+> db
+mycust
+
+> show dbs
+admin  0.000GB
+local  0.000GB
+
+> db.cust.insert({
+"first_name":"Cool",
+"last_name": "Star",
+memberships: ["club1","club2"],
+address: {"city": "hilde","country":"Ger"},
+contacts: [{"name": "Tom","relationship":"Friend"}]})
+#WriteResult({ "nInserted" : 1 })
+
+> show collections
+cust
+
+> db.cust.find()
+{ "_id" : ObjectId("5cc936c61cd2cda82061b0e5"), "first_name" : "Cool", "last_name" : "Star", "memberships" : [ "club1", "club2" ], "address" : { "city" : "hilde", "country" : "Ger" }, "contacts" : [ { "name" : "Tom", "relationship" : "Friend" } ] }
+
+> db.cust.insert({first_name:"Hot",last_name: "Star"})
+WriteResult({ "nInserted" : 1 })
+> db.cust.find()
+{ "_id" : ObjectId("5cc936c61cd2cda82061b0e5"), "first_name" : "Cool", "last_name" : "Star", "memberships" : [ "club1", "club2" ], "address" : { "city" : "hilde", "country" : "Ger" }, "contacts" : [ { "name" : "Tom", "relationship" : "Friend" } ] }
+{ "_id" : ObjectId("5cc938641cd2cda82061b0e6"), "first_name" : "Hot", "last_name" : "Star" }
+
+> show dbs
+admin        0.000GB
+local        0.000GB
+mycust	     0.000GB
+
+>show collections;
+cust
+
+> db.createCollection("ImpCustomers")
+{ "ok" : 1 }
+
+> show collections;
+ImpCustomers
+cust
+
+> db.ImpCustomers.insert({first_name:"Hot",last_name: "Star"})
+WriteResult({ "nInserted" : 1 })
+> db.ImpCustomers.find()
+{ "_id" : ObjectId("5cc9399a1cd2cda82061b0e7"), "first_name" : "Hot", "last_name" : "Star" }
+
+#Using helper function
+> db.cust.find().pretty()
+{
+	"_id" : ObjectId("5cc936c61cd2cda82061b0e5"),
+	"first_name" : "Cool",
+	"last_name" : "Star",
+	"memberships" : [
+		"club1",
+		"club2"
+	],
+	"address" : {
+		"city" : "hilde",
+		"country" : "Ger"
+	},
+	"contacts" : [
+		{
+			"name" : "Tom",
+			"relationship" : "Friend"
+		}
+	]
+}
+{
+	"_id" : ObjectId("5cc938641cd2cda82061b0e6"),
+	"first_name" : "Hot",
+	"last_name" : "Star"
+}
+
+#Another example
+#insert data in db(mycustomers),collection(customers)
+use mycustomers
+db.customers.insert({ "_id" : 1, "first_name" : "patrick", "last_name" : "Sullivan", "memberships" : [ "club1", "club2" ], "address" : { "city" : "hilde", "country" : "Ger" }, "contacts" :  { "name" : "Tom", "relationship" : "Friend" } })
+db.customers.insert({ "_id" : 2, "first_name" : "patrick", "last_name" : "John", "memberships" : [ "club1", "club3" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" :  { "name" : "Tom", "relationship" : "Friend" } })
+db.customers.insert({ "_id" : 3, "first_name" : "isaac", "last_name" : "John", "memberships" : [ "club1"], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" :  { "name" : "Mat", "relationship" : "Friend" } })
+db.customers.insert({ "_id" : 4, "first_name" : "junior", "last_name" : "John", "memberships" : [ "club1","club2","club3","club4"], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" :  { "name" : "Matie", "relationship" : "Friend" } })
+db.customers.insert({ "_id" : 5, "first_name" : "genie", "last_name" : "sally", "memberships" : [ "club3","club4"], "address" : { "city" : "belfast", "country" : "uk" }, "contacts" :  { "name" : "Matie", "relationship" : "sister" } })
+db.customers.insert({ "_id" : 6, "first_name" : "genie", "last_name" : "sally", "memberships" : [ "club3","club4"], "address" : { "city" : "belfast", "country" : "uk" }, "contacts" :  { "name" : "john", "relationship" : "brother" } })
+
+db.customers.find()
+#result
+{ "_id" : 1, "first_name" : "patrick", "last_name" : "Sullivan", "memberships" : [ "club1", "club2" ], "address" : { "city" : "hilde", "country" : "Ger" }, "contacts" : { "name" : "Tom", "relationship" : "Friend" } }
+{ "_id" : 2, "first_name" : "patrick", "last_name" : "John", "memberships" : [ "club1", "club3" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" : { "name" : "Tom", "relationship" : "Friend" } }
+{ "_id" : 3, "first_name" : "isaac", "last_name" : "John", "memberships" : [ "club1" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" : { "name" : "Mat", "relationship" : "Friend" } }
+{ "_id" : 4, "first_name" : "junior", "last_name" : "John", "memberships" : [ "club1", "club2", "club3", "club4" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" : { "name" : "Matie", "relationship" : "Friend" } }
+{ "_id" : 5, "first_name" : "genie", "last_name" : "sally", "memberships" : [ "club3", "club4" ], "address" : { "city" : "belfast", "country" : "uk" }, "contacts" : { "name" : "Matie", "relationship" : "sister" } }
+{ "_id" : 6, "first_name" : "genie", "last_name" : "sally", "memberships" : [ "club3", "club4" ], "address" : { "city" : "belfast", "country" : "uk" }, "contacts" : { "name" : "john", "relationship" : "brother" } }
+
+#or doing it in one go..
+db.customers1.insert([
+{ "_id" : 1, "first_name" : "patrick", "last_name" : "Sullivan", "memberships" : [ "club1", "club2" ], "address" : { "city" : "hilde", "country" : "Ger" }, "contacts" : { "name" : "Tom", "relationship" : "Friend" } },
+{ "_id" : 2, "first_name" : "patrick", "last_name" : "John", "memberships" : [ "club1", "club3" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" : { "name" : "Tom", "relationship" : "Friend" } },
+{ "_id" : 3, "first_name" : "isaac", "last_name" : "John", "memberships" : [ "club1" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" : { "name" : "Mat", "relationship" : "Friend" } },
+{ "_id" : 4, "first_name" : "junior", "last_name" : "John", "memberships" : [ "club1", "club2", "club3", "club4" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" : { "name" : "Matie", "relationship" : "Friend" } },
+{ "_id" : 5, "first_name" : "genie", "last_name" : "sally", "memberships" : [ "club3", "club4" ], "address" : { "city" : "belfast", "country" : "uk" }, "contacts" : { "name" : "Matie", "relationship" : "sister" } },
+{ "_id" : 6, "first_name" : "genie", "last_name" : "sally", "memberships" : [ "club3", "club4" ], "address" : { "city" : "belfast", "country" : "uk" }, "contacts" : { "name" : "john", "relationship" : "brother" } }
+])
+
+#or without specifying _id(This will allow to insert same values multiple times as Unique index is on _id which is automatically 
+assigned unique ObjectID and only if there is no unique constraint on any other field)
+
+db.customers1.insert([
+{ "first_name" : "patrick", "last_name" : "Sullivan", "memberships" : [ "club1", "club2" ], "address" : { "city" : "hilde", "country" : "Ger" }, "contacts" : { "name" : "Tom", "relationship" : "Friend" } },
+{ "first_name" : "patrick", "last_name" : "John", "memberships" : [ "club1", "club3" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" : { "name" : "Tom", "relationship" : "Friend" } },
+{ "first_name" : "isaac", "last_name" : "John", "memberships" : [ "club1" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" : { "name" : "Mat", "relationship" : "Friend" } },
+{ "first_name" : "junior", "last_name" : "John", "memberships" : [ "club1", "club2", "club3", "club4" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" : { "name" : "Matie", "relationship" : "Friend" } },
+{ "first_name" : "genie", "last_name" : "sally", "memberships" : [ "club3", "club4" ], "address" : { "city" : "belfast", "country" : "uk" }, "contacts" : { "name" : "Matie", "relationship" : "sister" } },
+{ "first_name" : "genie", "last_name" : "sally", "memberships" : [ "club3", "club4" ], "address" : { "city" : "belfast", "country" : "uk" }, "contacts" : { "name" : "john", "relationship" : "brother" } }
+])
+
+db.customers1.insert([{ "first_name" : "isaak", "last_name" : "John", "memberships" : [ "club1", "club3" ], "address" : { "city" : "dub", "country" : "Ire" }, "contacts" : { "name" : "Mat", "relationship" : "Friend" } },
+{ "first_name" : "isaaac", "last_name" : "Johny", "memberships" : [ "club1" ], "address" : { "city" : "dublin", "country" : "Ire" }, "contacts" : { "name" : "Maty", "relationship" : "Friend" } }
+])
+
+Try inserting same multiple times and check the count of documents
+db.customers2.count()
+
+##For more examples refer: MongoDB-Working-Ex2.txt 
