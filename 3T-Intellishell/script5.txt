@@ -1,0 +1,9 @@
+db
+show dbs
+use exampledb
+show dbs
+db
+db.createCollection("examplec1")
+show collections
+db.examplec2.insert({"name":"john","lname":"peter","city":"zurich","address":{"street":23,"block":100}})
+db.examplec3.save({"name":"john","lname":"peter","city":"zurich","address":{"street":23,"block":100}})

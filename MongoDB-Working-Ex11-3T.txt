@@ -1,0 +1,70 @@
+Aggregations:
+
+Affordable_housing_chicago
+------------------
+Aggregation example:
+import data from github or from kaggle
+
+--Create DB(newdb)
+--Create collection(Housing)
+--Import Data into your collection and change datatypes if needed for further usage.
+--Verify the data inserted in collection
+
+Using $lookup
+makes it possible to join data from an input collection (the collection you’re running the query on) 
+and a lookup collection (the collection you want data from), as long as both collections are on the same database
+Output documents from the lookup collection are added as embedded documents in the input collection.
+
+We can use equality match.
+An equality match requires that the input collection and the lookup collection have a field to match on.
+
+(In our case, this is the address.zip_code field found in customers and the Zip Code field in housing.)
+
+We want to show affordable housing options in the customers dataset as a new embedded field address.zip_code.affordable_housing_options,
+where there is a zip code match.
+
+Stage1:$lookup
+// Equality Match
+{
+    from: "housing",
+    localField: "address.zip_code",
+    foreignField: "Zip Code",
+    as: "address.zip_code.affordable_housing_options"
+}
+housing is our lookup collection
+address.zip_code is the field name in our input collection
+Zip Code is the field name in our lookup collection
+We’d like to create a new field address.zip_code.affordable_housing_options in our input collection. 
+This is where we’ll embed the output documents from our lookup collection.
+
+choose Show All Embedded Fields.
+
+Look for field: affordable_housing_options
+
+Sort it in descending and then look into it, right>document>view json
+==============================
+
+Using $Project (usually used with other operators like find,match,lookup etc)
+Select specific fields and passing them to next stage
+Can be used to filter documents to show only the fields we need
+
+first,last,address.city,address.state,address.zip_code.affordable_housing_options."Property Type" or ."Property Name" or ."Units" or ."Zip Code"
+
+Stage2 :$project
+
+"first": 1.0,
+"last" : 1.0,
+"address.city" : 1.0,
+"address.state" : 1.0,
+"address.zip_code.affordable_housing_options.Property Type": 1.0,
+"address.zip_code.affordable_housing_options.Property Name": 1.0,
+"address.zip_code.affordable_housing_options.Units": 1.0,
+"address.zip_code.affordable_housing_options.Zip Code": 1.0
+
+==============================
+Using $out
+exporting output documents to a new collection
+
+execute full pipeline and view the results
+save the pipeline..
+

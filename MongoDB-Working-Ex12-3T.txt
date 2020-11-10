@@ -1,0 +1,129 @@
+
+#to test this aggregation
+>create a database > create a collection "Shops"
+>import data into collection
+
+model.Shops.aggregate([
+    { "$match": { "ShopId": 435 } },
+    { "$unwind": "$products" },
+    {
+        "$group": {
+            "_id": "$products.productCategory",
+            "count": { "$sum": 1 },
+            "products": { 
+                "$push": {
+                    "productName": "$products.productName"
+                }
+            }
+        }
+    },
+    {
+        "$group": {
+            "_id": null,            
+            "productList": { 
+                "$push": {
+                    "categoryname": "$_id",
+                    "productcount": "$count",
+                    "products": "$products"
+                }
+            }
+        }
+    }      
+], function (err, results) {
+    res.json(results);
+});
+
+===============
+Using Aggregation editor to build multiple stages
+---------
+The above pipeline uses the following pipeline steps (in the order given) and explained as:
+
+Step 1) $match operator is there to filter documents that get into the pipeline. 
+If you are coming from a SQL background, this pipeline is similar to the SQL's WHERE clause where e.g.
+
+SELECT *
+FROM Shops
+WHERE ShopId = 435
+If you run the pipeline at this stage only, it will return all the documents that match on the ShopId of 435
+
+Step 2) $unwind - The products field is an array so you'll need to add an $unwind stage to your pipeline so 
+that you can flatten the array as it needs to be processed further down as a denormalised field. For each input document, 
+this outputs n documents where n is the number of array elements and can be zero for an empty array.
+
+Running the aggregate pipeline up to this stage for the above sample will produce 5 documents i.e. in mongo shell
+db.getCollection('shops').aggregate([
+    { "$match": { "ShopId": 435 } }, // Step 1
+    { "$unwind": "$products" }      // Step 2
+])
+
+Step 3) $group pipeline step to group the documents in the pipeline by the productCategory field from the denormalised 
+documents and creates an array products that has fields from the previous pipeline. The $group pipeline operator is similar 
+to the SQL's GROUP BY clause.
+
+In SQL, you can't use GROUP BY unless you use any of the aggregation functions. The same way, you have to use an aggregation 
+function called accumulator in MongoDB as well. You can read more about the aggregation functions here.
+
+The accumulator operator you would need to create the array is $push.
+
+In the same $group operation, the logic to calculate the count aggregate i.e. the number of documents in each category group 
+is done using the $sum accumulator operator. The expression { $sum : 1 } returns the sum of values of the number of documents in each group.
+
+To understand the pipeline, run the operation at this stage and analyse the results. So, executing the equivalent mongo operation
+db.getCollection('shops').aggregate([
+    { "$match": { "ShopId": 435 } }, // Step 1
+    { "$unwind": "$products" }, // Step 2
+    { // Step 3
+        "$group": { 
+            "_id": "$products.productCategory",
+            "count": { "$sum": 1 },
+            "products": { 
+                "$push": {
+                    "productName": "$products.productName"
+                }
+            }
+        }
+    } 
+])
+
+Step 4) The last $group pipeline will then produce the desired result when you specify an _id value of null to calculate 
+accumulated values for all the input documents above as a whole. The desired structure has a productsList array that can be 
+created using the $push operator.
+Again, running the final aggregate pipeline at this stage will give you the desired result, i.e. executing this in mongo shell
+
+db.getCollection('shops').aggregate([
+    { "$match": { "ShopId": 435 } }, // Step 1
+    { "$unwind": "$products" }, // Step 2
+    { // Step 3
+        "$group": {
+            "_id": "$products.productCategory",
+            "count": { "$sum": 1 },
+            "products": { 
+                "$push": {
+                    "productName": "$products.productName"
+                }
+            }
+        }
+    },
+    { // Step 4
+        "$group": {
+            "_id": null,            
+            "productList": { 
+                "$push": {
+                    "categoryname": "$_id",
+                    "productcount": "$count",
+                    "products": "$products"
+                }
+            }
+        }
+    }     
+])
+
+when executing a pipeline, MongoDB pipes operators into each other. "Pipe" here takes the Linux meaning: 
+the output of an operator becomes the input of the following operator. The result of 
+each operator is a new collection of documents. So Mongo executes the above pipeline as follows:
+
+collection | $match | $unwind | $group | $group => result
+
+---
+execute the pipeline
+---

@@ -1,11 +1,10 @@
-db.getCollection("Affordable_housing_chicago").aggregate(
+db.getCollection("Housing").aggregate(
 
 	// Pipeline
 	[
 		// Stage 1
 		{
 			$match: {
-			    // match is the filter that will provide criteria & returns related documents
 			    "Property Type":"Senior"
 			}
 		},
@@ -13,9 +12,6 @@ db.getCollection("Affordable_housing_chicago").aggregate(
 		// Stage 2
 		{
 			$group: {
-			    //_id: <expression>,
-			    //<field1>: { <accumulator1> : <expression1> },
-			    //...
 			    _id: "$Zip Code",
 			    totalUnits: {$sum: "$Units"}
 			}
@@ -24,8 +20,6 @@ db.getCollection("Affordable_housing_chicago").aggregate(
 		// Stage 3
 		{
 			$sort: {
-			    //<field1>: <1|-1>,
-			    //<field2>: <1|-1> ...
 			    totalUnits: -1
 			}
 		},

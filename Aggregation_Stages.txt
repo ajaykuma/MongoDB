@@ -1,0 +1,129 @@
+Stages of Aggregation
+------------------
+$project
+This stage is used to select certain fields from a collection. We can also add, remove or reshape a key.
+
+db.example.aggregate([
+  {
+    $project:{
+     _id:1,
+     'dept':{$toUpper:'$name'},
+     'newexp':{$add:['$exp',10]}
+   }
+      }
+  ])
+
+
+Note**Here we are creating ‘dept’ from earlier ‘name’ which was in upper case. 
+And in ‘newexp’ we are adding the experience as 10 years.
+
+$match
+It is used in filtering operation and it can reduce the number of documents that are given as input to the next stage. 
+db.example.aggregate([
+   {
+     $match:{
+        name:'xyz'
+      }
+    }
+])
+
+$group
+db.example.aggregate([
+  {
+     $group:{
+       _id:{'dept':'$name'},
+       employee_count:{$sum:10}
+      }
+   }
+])
+
+$sort
+It is used to sort all the documents.
+
+to group all department in ascending order and then find the count of employees.
+db.example.aggregate([
+  {
+    $group:{
+      _id:'$name',
+      employee_count:{$sum:1}
+    }
+ },
+ {
+    $sort:{
+       _id:1
+      }
+   }
+])
+
+$skip & $limit
+Using skip we can skip forward in the list of all documents for the given limit. And using limit we can limit
+ the number of documents we want to look at by specifying the limit as per our convenience.
+
+db.example.aggregate([
+   {
+     $group:{
+       _id:'$name',
+       employee_count:{$sum:10}
+      }
+   },
+  {
+     $sort:{
+     _id:1
+    }
+  },
+ {
+    $skip:4
+ },
+ {
+    $limit:5
+ }
+])
+
+$first & $last
+db.example.aggregate([
+  {
+    $group:{
+      _id:'$name',
+      employee_count:{$sum:1},
+      record:{ $first:'$code'}
+     }
+   }
+])
+
+$unwind
+Sample document:
+{
+  a:abcdata,
+  b:xyzdata,
+  c:[a1,a2,a3]
+}
+
+If perform unwind operation on c then we will get 3 documents 
+{
+    a:abcdata,
+    b:xyzdata,
+    c:a1
+}
+{
+    a:abcdata,
+    b:xyzdata,
+    c:a2
+}
+{
+    a:abcdata,
+    b:xyzdata,
+    c:a3
+}
+
+==========
+$sum – Sums up values from all documents in the collection.
+db.examples.aggregate([{$group : {_id : "$by_student", num_data : {$sum : "$likes"}}}])
+$avg – Average of all documents in the collection.
+db.examples.aggregate([{$group : {_id : "$by_student", num_data : {$avg : "$likes"}}}])
+$min – Minimum values of all documents in a collection.
+db.examples.aggregate([{$group : {_id : "$by_student", num_data : {$min : "$likes"}}}])
+$max – Maximum values of all documents in a collection.
+db.examples.aggregate([{$group : {_id : "$by_student", num_data : {$max : "$likes"}}}])
+$push – Inserts value in the resulting document.
+db.examples.aggregate([{$group : {_id : "$by_student", url : {$push: "$url"}}}])
+
