@@ -1,0 +1,140 @@
+For aggregation test:
+
+Create a collection with these fields
+db.customersT.insert[{  "id": "1",  "firstName": "Jane",  "lastName": "Doe",  "phoneNumber": "555-555-1212",  "city": "Beverly Hills",
+  "state": "CA",  "zip": "90210",  "email": "Jane.Doe@test.io"
+},
+{  "id": "1",  "firstName": "aJane",  "lastName": "De",  "phoneNumber": "555-555-1212",  "city": "Beverly Hills",
+  "state": "CA",  "zip": "90211",  "email": "Jane.De@test.io"
+},
+{  "id": "2",  "firstName": "bJane",  "lastName": "Doen",  "phoneNumber": "555-555-1212",  "city": "Beverly Hills",
+  "state": "CA",  "zip": "90210",  "email": "Jane.Doen@test.io"
+},
+{  "id": "3",  "firstName": "cJane",  "lastName": "Doet",  "phoneNumber": "555-555-1212",  "city": "Beverly Hills",
+  "state": "CA",  "zip": "90211",  "email": "Jane.Doet@test.io"
+},
+{  "id": "4",  "firstName": "dJane",  "lastName": "Doex",  "phoneNumber": "555-555-1212",  "city": "Beverly Hills",
+  "state": "CA",  "zip": "90212",  "email": "Jane.Doex@test.io"
+},
+{  "id": "5",  "firstName": "eJane",  "lastName": "Doej",  "phoneNumber": "555-555-1212",  "city": "Beverly Hills",
+  "state": "CA",  "zip": "90212",  "email": "Jane.Doej@test.io"
+}]
+
+We know that, the aggregate function accepts an array of data transformations which are applied to the data 
+in the order they're defined. This makes aggregation a lot like other data flow pipelines: 
+the transformations that are defined first will be executed first and the result will be 
+used by the next transformation in the sequence.
+
+$match
+#The matching expression looks and acts much like the MongoDB find function or a SQL WHERE clause. 
+#This will return the array of customers that live in the 90210 zip code. 
+
+db.customers.aggregate([ 
+  { $match: { "zip": 90210 }}
+]);
+
+$group
+The $group transformation allows us to group documents together and performs transformations 
+or operations across all of those grouped documents. In this case, we're creating a new field in 
+the results called count which adds 1 to a running sum for every document. The _id field is required 
+for grouping and would normally contain fields from each document that we'd like to preserve (ie: phoneNumber). 
+Since we're just looking for the count of every document, we can make it null here.
+
+db.customers.aggregate([ 
+  { $match: {"zip": "90210"}}, 
+  { 
+    $group: {
+      _id: null, 
+      count: {
+        $sum: 1
+      }
+    }
+  }
+]);
+
+Create a collection with these fields for products taken by customer
+db.productsT.insert([
+{name: "Router",  listPrice: 20.99,  sku: 1},
+{name: "pendrive",  listPrice: 2.99,  sku: 2},
+{name: "Router",  listPrice: 20.99,  sku: 3},
+{name: "cable",  listPrice: 200.99,  sku: 4},
+{name: "Router",  listPrice: 20.99,  sku: 5},
+{name: "Router",  listPrice: 20.99,  sku: 6},
+{name: "Router",  listPrice: 20.99,  sku: 7}])
+
+Create a transaction table that contains customerid, productid and transaction amount
+db.transactionsT.insert([
+{  
+  productId: ObjectId("5fae7a9fa64c121983043322"),customerId: ObjectId("5fae795da64c12198304331c"),amount: 100},
+  {productId: ObjectId("5fae7a9fa64c121983043323"),customerId: ObjectId("5fae795da64c12198304331d"),amount: 100},
+  {productId: ObjectId("5fae7a9fa64c121983043322"),customerId: ObjectId("5fae795da64c12198304331e"),amount: 100},
+  {productId: ObjectId("5fae7a9fa64c121983043324"),customerId: ObjectId("5fae795da64c12198304331e"),amount: 100},
+  {productId: ObjectId("5fae7a9fa64c121983043325"),customerId: ObjectId("5fae795da64c12198304331f"),amount: 100},
+  {productId: ObjectId("5fae7a9fa64c121983043326"),customerId: ObjectId("5fae795da64c121983043320"),amount: 100},
+  {productId: ObjectId("5fae7a9fa64c121983043327"),customerId: ObjectId("5fae795da64c121983043321"),amount: 100}]
+)
+
+Adding more data
+db.transactionsT.insert([
+{  
+  productId: ObjectId("5fae7a9fa64c121983043322"),customerId: ObjectId("5fae795da64c12198304331c"),amount: 100},
+  {productId: ObjectId("5fae7a9fa64c121983043323"),customerId: ObjectId("5fae795da64c12198304331d"),amount: 150},
+  {productId: ObjectId("5fae7a9fa64c121983043322"),customerId: ObjectId("5fae795da64c12198304331e"),amount: 50},
+  {productId: ObjectId("5fae7a9fa64c121983043324"),customerId: ObjectId("5fae795da64c12198304331e"),amount: 200},
+  {productId: ObjectId("5fae7a9fa64c121983043325"),customerId: ObjectId("5fae795da64c12198304331f"),amount: 300},
+  {productId: ObjectId("5fae7a9fa64c121983043326"),customerId: ObjectId("5fae795da64c121983043320"),amount: 100},
+  {productId: ObjectId("5fae7a9fa64c121983043327"),customerId: ObjectId("5fae795da64c121983043321"),amount: 1000}]
+)
+
+$using match
+{ "firstName" : { $exists : true }, "lastName" : { $exists : true } }
+
+$using lookup
+// Equality Match
+{
+    from: "transactionsT",
+    localField: "_id",
+    foreignField: "customerId",
+    as: "transactionDetails.countoftransaction"
+}
+
+$using project
+{
+"id" : 1,
+    "firstName" : 1,
+    "lastName" : 1,
+    "city" : "Beverly Hills", 
+    "state" : "CA", 
+    "zip" : "90212",
+    "email" : "Jane.Doex@test.io",
+    "transactionDetails._id":1, 
+    "transactionDetails.productId" : 1,
+    "transactionDetails.customerId" : 1,
+    "transactionDetails.amount" : 1
+    
+}
+
+$using unwind
+{
+    path: "$transactionDetails.transaction"
+    }
+
+$using project
+{
+    "transactionDetails.transaction.customerId" : 1,
+    "firstName" : 1,
+    "lastName" : 1,
+    "city" : "Beverly Hills", 
+    "state" : "CA", 
+    "zip" : "90212",
+    "email" : "Jane.Doex@test.io",
+    "transactionDetails.transaction.productId":1,
+    "transactionDetails.transaction.amount":1
+}
+
+$using group
+{
+    _id: "$transactionDetails.transaction.customerId",
+    amtSpent : {$sum: "$transactionDetails.transaction.amount"},
+}
+    

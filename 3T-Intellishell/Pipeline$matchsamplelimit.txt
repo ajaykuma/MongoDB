@@ -1,0 +1,49 @@
+db.getCollection("customers").aggregate(
+
+	// Pipeline
+	[
+		// Stage 1
+		{
+			$match: {
+			    "first" : { 
+			            "$exists" : true
+			        }, 
+			        "last" : { 
+			            "$exists" : true
+			        }
+			    
+			}
+		},
+
+		// Stage 2
+		{
+			$sample: {
+			   size : 10
+			}
+		},
+
+		// Stage 3
+		{
+			$limit: 3
+		},
+
+		// Stage 4
+		{
+			$project: {
+			   "email" : 1,
+			   "address" : 1
+			}
+		},
+
+		// Stage 5
+		{
+			$unwind: {
+			    path: "$address"
+			}
+		},
+
+	]
+
+	// Created with Studio 3T, the IDE for MongoDB - https://studio3t.com/
+
+);
