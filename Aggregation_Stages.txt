@@ -118,12 +118,16 @@ If perform unwind operation on c then we will get 3 documents
 ==========
 $sum – Sums up values from all documents in the collection.
 db.examples.aggregate([{$group : {_id : "$by_student", num_data : {$sum : "$likes"}}}])
+
 $avg – Average of all documents in the collection.
 db.examples.aggregate([{$group : {_id : "$by_student", num_data : {$avg : "$likes"}}}])
+
 $min – Minimum values of all documents in a collection.
 db.examples.aggregate([{$group : {_id : "$by_student", num_data : {$min : "$likes"}}}])
+
 $max – Maximum values of all documents in a collection.
 db.examples.aggregate([{$group : {_id : "$by_student", num_data : {$max : "$likes"}}}])
+
 $push – Inserts value in the resulting document.
 db.examples.aggregate([{$group : {_id : "$by_student", url : {$push: "$url"}}}])
 

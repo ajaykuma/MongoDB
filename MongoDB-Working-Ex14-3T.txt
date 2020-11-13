@@ -1,0 +1,46 @@
+downloaded a dataset which has salary information of university instructional staff for the entire US. 
+This data is available at nces.ed.gov. We have data from 7598 institutions with the following fields:
+
+var FacultySchema = mongoose.Schema({
+	InstitutionName : String,
+	AvgSalaryAll : Number,
+	AVGSalaryProfessors : Number,
+	AVGSalaryAssociateProfessors : Number,
+	AVGSalaryAssistantProfessors : Number,
+	AVGSalaryLecturers : Number,
+	AVGSalaryInstructors : Number,
+	StreetAddress : String,
+	City : String,
+	State : String,
+	ZIPCode : String,
+	MenStaffCount : Number,
+	WomenStaffCount : Number
+}
+With this data we want to find out (on average) what the difference is between salaries of associate professors and professors by state. Then, an associate professor can realize in which state he is valued closer to a professor in terms of salary.
+
+To answer this question, a researcher first needs to weed out bad data from the collection, because there are a few rows/documents in our dataset where the average salary is a null or empty string. To accomplish this cleaning of the dataset we will add the following stage:
+
+{$match: {AVGSalaryProfessors: {$not: {$type: 2}}, AVGSalaryAssociateProfessors:  {$not: {$type: 2}}}}
+This will filter out all the entities which have string values in those two fields. In MongoDB, each type is represented with a unique number - for strings, the type number is 2.
+
+This dataset is a good example because in real world data analytics, engineers often have to deal with data cleanups as well.
+
+Now that we have some stable data, we can continue to the next stage where we will average the salaries by state:
+
+{$group: {_id: "$State", StateAVGSalaryProfessors: {$avg: "$AVGSalaryProfessors"}, StateAVGSalaryAssociateProfessors: {$avg: "$AVGSalaryAssociateProfessors"}}}
+We just need to run a projection of the above result set and get the difference in state average salaries, as shown below in Stage 3 of our pipeline:
+
+{$project: {_ID: 1, SalaryDifference: {$subtract: ["$StateAVGSalaryProfessors", "$StateAVGSalaryAssociateProfessors"]}}}
+This should give us the state level average salary difference between professors and associate professors from a dataset of 7519 educational institutions all over US. To make it even more convenient to interpret this information, let us do a simple sort so we know which state has the least difference by adding a $sort stage:
+
+{$sort: { SalaryDifference: 1}}
+From this dataset, it is apparent that Idaho, Kansas, and West Virginia are three states where the difference in salaries of associate professors and professors is the least compared to all the other states.
+
+The full aggregation pipeline generated for this is shown below:
+
+[
+{$match: {AVGSalaryProfessors: {$not: {$type: 2}}, AVGSalaryAssociateProfessors:  {$not: {$type: 2}}}},
+{$group: {_id: "$State", StateAVGSalaryProfessors: {$avg: "$AVGSalaryProfessors"}, StateAVGSalaryAssociateProfessors: {$avg: "$AVGSalaryAssociateProfessors"}}},
+{$project: {_ID: 1, SalaryDifference: {$subtract: ["$StateAVGSalaryProfessors", "$StateAVGSalaryAssociateProfessors"]}}},
+{$sort: { SalaryDifference: 1}}
+]

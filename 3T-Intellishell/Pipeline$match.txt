@@ -1,0 +1,39 @@
+db.getCollection("Housing").aggregate(
+
+	// Pipeline
+	[
+		// Stage 1
+		{
+			$match: {
+			 //"Property Type":"Senior"
+			  //$text: { $search: "Senior" } //if text index created
+			  "Property Type": /.*Seni*/
+			}
+		},
+
+		// Stage 2
+		{
+			$group: {
+			    _id: "$Zip Code",
+			    totalUnits: {$sum: "$Units"}
+			}
+		},
+
+		// Stage 3
+		{
+			$sort: {
+			    totalUnits: -1 
+			}
+		},
+
+		// Stage 4
+		{
+			$out: // Note: must be last stage of pipeline
+			"pipe1-result"
+		},
+
+	]
+
+	// Created with Studio 3T, the IDE for MongoDB - https://studio3t.com/
+
+);

@@ -1,0 +1,379 @@
+Aggregations:
+Operators come in three varieties: stages, expressions, and accumulators.
+
+When calling aggregate on a collection, we pass a list of stage operators. 
+Documents are processed through the stages in sequence, with each stage applying to each document individually. 
+Most importantly remember, that aggregation is a “pipeline” and is just exactly that, being “piped” processes 
+that feed input into the each stage as it goes along. 
+The output from the first thing goes to the next thing and then that manipulates 
+to give input to the next thing and so on.
+
+For example:
+we'll simply stick to 3 main data entities:
+
+A Customer, which represents a person taking a service/device
+A Product, which represents a service/device
+A Transaction, which represents the number of services/devices customer took.
+
+Typical customer entity:
+{
+  "id": "1",
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "phoneNumber": "555-555-1212",
+  "email": "Jane.Doe@test.io"
+}
+
+we'll need to determine what types of validations we'd like to do on this entity.
+
+We can validate any of the fields in a collection and can validate based on the existence of a field, 
+data type and format in that field, values in a field, and correlations between two fields in a document.
+
+In the case of the Customer entity, we'd like to validate the following:
+
+firstName, lastName, phoneNumber and email are all required to exist
+phoneNumber is inserted in a specific format (123-456-7890)
+email exists (we won't validate email format for now)
+We can represent these validations in an intermediate format (before putting them into the database) 
+using the JSONSchema spec. 
+While JSONSchema isn't a necessary step to do validations in MongoDB, it's helpful to codifying our rules in a 
+standard format and JSONSchema is quickly gaining traction for doing server-side validations.
+
+For customer entity:
+
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "phoneNumber": {
+      "type": "string",
+      "pattern": "^([0-9]{3}-[0-9]{3}-[0-9]{4}$"
+    },
+    "email": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "firstName",
+    "lastName",
+    "phoneNumber",
+    "email"
+  ]
+}
+
+
+Note**Using JSONSchema also allows us to re-use validations on the application side as well, 
+such as RESTHeart's JSONSchema validation.
+
+Typical product entity:
+{
+  "id": "1",
+  "name": "Router",
+  "listPrice": 20.99,
+  "sku": 555555555,
+  "productId": "123abc"
+}
+
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "listPrice": {
+      "type": "number"
+    },
+    "sku": {
+      "type": "integer"
+    },
+    "productId": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "listPrice",
+    "sku",
+    "productId"
+  ]
+}
+
+Typical transaction entity:
+{
+  "id": "1",
+  "productId": "1",
+  "customerId": "1",
+  "amount": 41.98
+}
+
+Validation rule:
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "productId": {
+      "type": "string"
+    },
+    "customerId": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "id",
+    "productId",
+    "customerId",
+    "amount"
+  ]
+}
+
+#Create collections:
+db.createCollection("customers", {
+  validator: {
+    $and: [
+      {
+        "firstName": {$type: "string", $exists: true}
+      },
+      {
+        "lastName": { $type: "string", $exists: true}      
+      },
+      {
+        "phoneNumber": { 
+          $type: "string", 
+          $exists: true,
+          $regex: /^[0-9]{3}-[0-9]{3}-[0-9]{4}$/
+        }
+      },
+      {
+        "email": {
+          $type: "string",
+          $exists: true
+        }
+      }
+    ]
+  }
+})
+
+db.createCollection("products", {
+  validator: {
+    $and: [
+      {
+        "name": {$type: "string", $exists: true}
+      },
+      {
+        "listPrice": { $type: "double", $exists: true}      
+      },
+      {
+        "sku": { $type: "int", $exists: true}
+      }
+    ]
+  }
+})
+
+db.createCollection("transactions", {  
+  validator: {
+    $and: [
+      {
+        "productId": {$type: "objectId", $exists: true}
+      },
+      {
+        "customerId": { $type: "objectId", $exists: true}      
+      },
+      {
+        "amount": { $type: "double", $exists: true}
+      }
+    ]
+  }
+})
+
+#Testing validations
+db.customers.insertOne({  
+  firstName: "John",
+  lastName: "O'Connor",
+  phoneNumber: "555-555-1212"
+});
+
+since we omitted email, this will fail with "errmsg" : "Document failed validation"
+
+db.customers.insertOne({ 
+    firstName: "John", 
+    lastName: "O'Connor", 
+    phoneNumber: "555-555-1212", 
+    email: "john@test.io"
+    });
+
+#keep a track of insertID after insert
+
+db.products.insertOne({  
+  name: "Router",
+  listPrice: 20.99,
+  sku: 1
+});
+
+
+#keep a track of insertID after insert
+
+db.transactions.insertOne({  
+  productId: ObjectId("xxxxxxxxx"),
+  customerId: ObjectId("yyyyyy"),
+  amount: 2.99
+});
+
+check ur collections
+-------------------------------
+For aggregation test:
+
+Create a collection with these fields
+{
+  "id": "1",
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "phoneNumber": "555-555-1212",
+  "city": "Beverly Hills",
+  "state: "CA",
+  "zip": 90210
+  "email": "Jane.Doe@test.io"
+}
+
+We know that, the aggregate function accepts an array of data transformations which are applied to the data 
+in the order they're defined. This makes aggregation a lot like other data flow pipelines: 
+the transformations that are defined first will be executed first and the result will be 
+used by the next transformation in the sequence.
+
+$match
+#The matching expression looks and acts much like the MongoDB find function or a SQL WHERE clause. 
+#This will return the array of customers that live in the 90210 zip code. 
+
+db.customers.aggregate([ 
+  { $match: { "zip": 90210 }}
+]);
+
+$group
+The $group transformation allows us to group documents together and performs transformations 
+or operations across all of those grouped documents. In this case, we're creating a new field in 
+the results called count which adds 1 to a running sum for every document. The _id field is required 
+for grouping and would normally contain fields from each document that we'd like to preserve (ie: phoneNumber). 
+Since we're just looking for the count of every document, we can make it null here.
+
+db.customers.aggregate([ 
+  { $match: {"zip": "90210"}}, 
+  { 
+    $group: {
+      _id: null, 
+      count: {
+        $sum: 1
+      }
+    }
+  }
+]);
+
+#Gaining Insights with Sum, Min, Max, and Avg
+
+Create a collection products/services taken by customers
+Creat a collection for transactions as explained above.
+
+Say our transaction collection has this:
+{
+  "id": "1",
+  "productId": "1",
+  "customerId": "1",
+  "amount": 20.00,
+  "transactionDate": ISODate("2020-02-23T15:25:56.314Z")
+}
+
+$using match
+{
+   $match: {
+    transactionDate: {
+        $gte: ISODate("2017-01-01T00:00:00.000Z"),
+        $lt: ISODate("2017-02-01T00:00:00.000Z")
+    }
+  }
+}
+
+$group
+{
+  $group: {
+    _id: null, 
+    total: {
+      $sum: "$amount"
+    }
+  }
+}
+
+Finally:
+db.transactions.aggregate([
+  { 
+    $match: {
+      transactionDate: {
+        $gte: ISODate("2017-01-01T00:00:00.000Z"),
+        $lt: ISODate("2017-01-31T23:59:59.000Z")
+      }    
+    }
+  }, {
+    $group: {
+      _id: null,
+      total: {
+        $sum: "$amount"
+      }
+    }
+  }
+]);
+
+Using other operations:
+db.transactions.aggregate([
+  { 
+    $match: {
+      transactionDate: {
+        $gte: ISODate("2017-01-01T00:00:00.000Z"),
+        $lt: ISODate("2017-01-31T23:59:59.000Z")
+      }    
+    }
+  }, {
+    $group: {
+      _id: null,
+      total: {
+        $sum: "$amount"
+      },
+      average_transaction_amount: {
+        $avg: "$amount"
+      },
+      min_transaction_amount: {
+        $min: "$amount"
+      },
+      max_transaction_amount: {
+        $max: "$amount"
+      }
+    }
+  }
+]);
+
+
+
+
+
+
+
+
+
+
